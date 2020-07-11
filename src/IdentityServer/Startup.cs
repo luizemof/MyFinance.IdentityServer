@@ -1,8 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
-using System;
+﻿using System;
 using IdentityServer.Repository;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
@@ -33,16 +29,7 @@ namespace IdentityServer
         public void ConfigureServices(IServiceCollection services)
         {
             // uncomment, if you want to add an MVC-based UI
-            //services.AddControllersWithViews();
-
-            // var builder = services.AddIdentityServer(options =>
-            // {
-            //     // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
-            //     options.EmitStaticAudienceClaim = true;
-            // })
-            // .AddInMemoryIdentityResources(Config.IdentityResources)
-            // .AddInMemoryApiScopes(Config.ApiScopes)
-            // .AddInMemoryClients(Config.Clients);
+            services.AddControllersWithViews();
 
             services.AddSingleton(new DatabaseSettings(){ ConnectionString = "mongodb://localhost:27017", DatabaseName = "IdentityServer"});
 
@@ -67,9 +54,8 @@ namespace IdentityServer
             }
 
             // uncomment if you want to add MVC
-            //app.UseStaticFiles();
-            //app.UseRouting();
-
+            app.UseStaticFiles();
+            app.UseRouting();
             app.UseIdentityServer();
 
             ConfigureMongoDriver2IgnoreExtraElements();
@@ -77,11 +63,11 @@ namespace IdentityServer
             InitializeDatabase(app);
 
             // uncomment, if you want to add MVC
-            //app.UseAuthorization();
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapDefaultControllerRoute();
-            //});
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+               endpoints.MapDefaultControllerRoute();
+            });
         }
 
         private static void InitializeDatabase(IApplicationBuilder app)
