@@ -8,6 +8,6 @@ namespace IdentityServer.Models.Users
         public string Name { get; set; }
         public string Email { get; set; }
         public bool IsActive { get; set; }
-        public string ActiveOrDeactive { get { return IsActive ? "Deactivate" : "Activate"; } }
+        public string ActiveOrDeactive { get { return IsActive ? "Desativar" : "Reativar"; } }
     }
 }

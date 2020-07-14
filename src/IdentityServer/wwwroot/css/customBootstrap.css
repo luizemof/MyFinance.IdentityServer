@@ -1,4 +1,15 @@
-/* If change color here */
 .bg-primary {
     background-color: var(--primary) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: var(--gray) !important;
+}
+
+.btn-light {
+    background-color: var(--light) !important;
+    border-color: var(--light) !important;
+    color: var(--gray) !important;
 }
