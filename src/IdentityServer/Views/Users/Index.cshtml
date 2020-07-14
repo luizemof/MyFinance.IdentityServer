@@ -1,0 +1,37 @@
+@using IdentityServer.Models.Users
+@using System.Collections.Generic
+@using IdentityServer.Constants
+
+@model IEnumerable<UserModel>
+
+<div class="container-fluid mt-3">
+    <a class="btn btn-primary" asp-asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="">Novo</a>
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Email</th>
+            <th scope="col">Ativo</th>
+            <th scope="col"></th>
+
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (UserModel user in Model)
+    {
+        <tr>
+            <td>@user.Name</td>
+            <td>@user.Email</td>
+            
+            @if(@user.IsActive) { <td>Sim</td> }
+            else { <td>Não</td> }
+
+            <td>
+                <a class="btn btn-primary" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="@user.Id">Editar</a>
+                <a class="btn btn-danger" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Index">@user.ActiveOrDeactive</a>
+            </td>
+            
+        </tr>
+    }
+    </table>
+</div>

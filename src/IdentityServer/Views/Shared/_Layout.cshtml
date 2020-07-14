@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using IdentityServer4.Extensions
+@using IdentityServer.Constants
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,10 +14,19 @@
 </head>
 <body>
     <div id="app">
-        <header class="header">
-            <nav class="navbar bg-primary border-bottom box-shadow">
-                <a class="navbar-brand text-muted" asp-area="" asp-controller="Home" asp-action="Index">MyFinance Identity</a>
-            </nav>
+        <header class="header bg-primary d-flex align-items-center">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <a class="navbar-brand text-muted" asp-area="" asp-controller="@ControllerConstants.HOME_CONTROLLER" asp-action="Index">MyFinance Identity</a>
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.HOME_CONTROLLER" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Index">Users</a>
+                    </li>
+                </ul>
+                <a class="text-muted" asp-area="" asp-controller="@ControllerConstants.ACCOUNT_CONTROLLER" asp-action="Login">Login</a>
+            </div>
         </header>
         
         <div class="page">
