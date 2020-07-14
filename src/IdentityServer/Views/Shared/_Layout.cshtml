@@ -15,20 +15,30 @@
 <body>
     <div id="app">
         <header class="header bg-primary d-flex align-items-center">
-            <div class="container-fluid d-flex align-items-center justify-content-between">
-                <a class="navbar-brand text-muted" asp-area="" asp-controller="@ControllerConstants.HOME_CONTROLLER" asp-action="Index">MyFinance Identity</a>
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.HOME_CONTROLLER" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Index">Users</a>
-                    </li>
-                </ul>
-                <a class="text-muted" asp-area="" asp-controller="@ControllerConstants.ACCOUNT_CONTROLLER" asp-action="Login">Login</a>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-2">
+                        <a class="navbar-brand text-muted" asp-area="" asp-controller="@ControllerConstants.HOME_CONTROLLER" asp-action="Index">MyFinance Identity</a>
+                    </div>
+
+                    <div class="col-md-8 d-flex justify-content-center">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.HOME_CONTROLLER" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Index">Users</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-2 d-flex justify-content-end align-items-center">
+                        <a class="text-muted" asp-area="" asp-controller="@ControllerConstants.ACCOUNT_CONTROLLER" asp-action="Login">Login</a>
+                    </div>
+                </div>
             </div>
         </header>
-        
+
         <div class="page">
             <main role="main" class="pb-3">
                 @RenderBody()
