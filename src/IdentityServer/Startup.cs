@@ -1,4 +1,6 @@
 ﻿using System;
+using IdentityServer.Cryptography;
+using IdentityServer.Extensions;
 using IdentityServer.Repository;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
@@ -28,48 +30,15 @@ namespace IdentityServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // uncomment, if you want to add an MVC-based UI
             services.AddControllersWithViews();
 
             services.AddSingleton(new DatabaseSettings(){ ConnectionString = "mongodb://localhost:27017", DatabaseName = "IdentityServer"});
+            services.AddSingleton(new IdentityServerCryptography(Configuration["EncryptKey"]));
 
-            // ---  configure identity server with MONGO Repository for stores, keys, clients and scopes ---
-            services.AddIdentityServer()
-                .AddDeveloperSigningCredential()
-                .AddMongoRepository()
-                .AddClients()
-                .AddIdentityApiResources()
-                .AddPersistedGrants()
-                .AddTestUsers(Config.GetUsers());
-
-            
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = "Cookies";
-                options.DefaultChallengeScheme = "oidc";
-            })
-            .AddCookie("Cookies")
-            .AddOpenIdConnect("oidc", options =>
-            {
-                options.Authority = "https://localhost:5001";
-                options.ClientId = "IdentityServer";
-                options.ClientSecret = "secret";
-                options.ResponseType = "code";
-                options.SaveTokens = true;
-                options.Scope.Add("IdentityServerAdmin");
-            });
-
-            // services.AddAuthorization(options =>
-            // {
-            //     options.AddPolicy("IdentityServerScope", policy =>
-            //     {
-            //         policy.RequireAuthenticatedUser();
-            //         policy.RequireClaim("scope", "MyFinanceApi");
-            //     });
-            // });
-
-            // not recommended for production - you need to store your key material somewhere secure
-            // builder.AddDeveloperSigningCredential();
+            services.ConfigureDatabase(Configuration);
+            services.ConfigureDataAccess();
+            services.ConfigureServices();
+            services.ConfigureIdentityServer();
         }
 
         public void Configure(IApplicationBuilder app)

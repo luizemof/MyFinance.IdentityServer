@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using IdentityServer.Constants;
 using IdentityServer.Models.Users;
+using IdentityServer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,30 +13,24 @@ namespace IdentityServer.Controllers.Users
     [Route(ControllerConstants.USERS_CONTROLLER)]
     public class UsersController : Controller
     {
-        private static Dictionary<string, UserModel> Models = new Dictionary<string, UserModel>()
+        private readonly IUserService UserService;
+        
+        public UsersController(IUserService userService)
         {
-            { "1", new UserModel(){ Id="1", Name = "Luiz", Email="luiz.emof@gmail.com", IsActive = true }},
-            { "2", new UserModel(){ Id="2", Name = "May", Email="may.veriss@gmail.com", IsActive = false }}
-        };
-
-        [HttpGet(), ActionName("Index")]
-        public IActionResult Index()
+            UserService = userService ?? throw new ArgumentNullException(nameof(userService));
+        }
+        
+        [HttpGet, ActionName("Index")]
+        public async Task<IActionResult> Index()
         {
-            return View(Models.Values);
+            var users = await UserService.GetUsersAsync();
+            return View(users);
         }
 
         [HttpGet("Edit"), ActionName("Edit")]
         public IActionResult Edit(string id)
         {
-            var inputUserModel = new UserInputModel();
-            if (!string.IsNullOrWhiteSpace(id) && Models.TryGetValue(id, out UserModel user))
-            {
-                inputUserModel.Id = user.Id;
-                inputUserModel.Name = user.Name;
-                inputUserModel.Email = user.Email;
-            };
-
-            return View("Edit", inputUserModel);
+            return View("Edit", new UserInputModel());
         }
 
         [HttpPost, ActionName("Save")]
@@ -42,23 +38,7 @@ namespace IdentityServer.Controllers.Users
         {
             if (button == ControllerConstants.SAVE)
             {
-                if (!string.IsNullOrWhiteSpace(userInputModel.Id) && Models.TryGetValue(userInputModel.Id, out UserModel user))
-                {
-                    user.Name = userInputModel.Name;
-                    user.Email = userInputModel.Email;
-                    user.IsActive = true;
-                }
-                else
-                {
-                    string id = Guid.NewGuid().ToString();
-                    Models.Add(id, new UserModel() 
-                    { 
-                        Id=id, 
-                        Email = userInputModel.Email, 
-                        Name = userInputModel.Name,
-                        IsActive = true
-                    });
-                }
+                var id = string.IsNullOrWhiteSpace(userInputModel.Id) ? Guid.NewGuid().ToString() : userInputModel.Id;
             }
 
             return Redirect(ControllerConstants.USERS_CONTROLLER);
