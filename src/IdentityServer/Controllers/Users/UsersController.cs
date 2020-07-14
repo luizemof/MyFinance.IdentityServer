@@ -59,7 +59,7 @@ namespace IdentityServer.Controllers.Users
                 }
             }
 
-            return View("Index", Models.Values);
+            return Redirect(ControllerConstants.USERS_CONTROLLER);
         }
     }
 }

@@ -8,6 +8,11 @@
     color: var(--gray) !important;
 }
 
+.btn-secondary {
+    background-color: var(--secondary) !important;
+    border-color: var(--secondary) !important;
+}
+
 .btn-light {
     background-color: var(--light) !important;
     border-color: var(--light) !important;

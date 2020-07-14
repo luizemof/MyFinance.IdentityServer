@@ -4,7 +4,7 @@
 
 @model IEnumerable<UserModel>
 
-<div class="container-fluid mt-3">
+<div class="container-fluid">
     <div class="row">
         <div class="col d-flex justify-content-end">
             <a class="btn btn-primary mb-2" asp-asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="">Novo Usuário</a>
@@ -33,7 +33,7 @@
                             else { <td>Não</td> }
 
                             <td class="d-flex justify-content-end">
-                                <a class="btn btn-light" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="@user.Id">Editar</a>
+                                <a class="btn btn-secondary" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="@user.Id">Editar</a>
                                 <a class="btn btn-danger ml-2" style="min-width: 100px" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Index">@user.ActiveOrDeactive</a>
                             </td>
                         </tr>
