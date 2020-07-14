@@ -8,7 +8,7 @@ namespace IdentityServer.Controllers.Account
     [Route(ControllerConstants.ACCOUNT_CONTROLLER)]
     public class AccountController : Controller
     {
-        [HttpGet]
+        [HttpGet("Login"), ActionName("Login")]
         public IActionResult Login(string returnUrl)
         {
             return View();

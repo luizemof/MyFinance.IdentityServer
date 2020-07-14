@@ -42,6 +42,32 @@ namespace IdentityServer
                 .AddPersistedGrants()
                 .AddTestUsers(Config.GetUsers());
 
+            
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Cookies";
+                options.DefaultChallengeScheme = "oidc";
+            })
+            .AddCookie("Cookies")
+            .AddOpenIdConnect("oidc", options =>
+            {
+                options.Authority = "https://localhost:5001";
+                options.ClientId = "IdentityServer";
+                options.ClientSecret = "secret";
+                options.ResponseType = "code";
+                options.SaveTokens = true;
+                options.Scope.Add("IdentityServerAdmin");
+            });
+
+            // services.AddAuthorization(options =>
+            // {
+            //     options.AddPolicy("IdentityServerScope", policy =>
+            //     {
+            //         policy.RequireAuthenticatedUser();
+            //         policy.RequireClaim("scope", "MyFinanceApi");
+            //     });
+            // });
+
             // not recommended for production - you need to store your key material somewhere secure
             // builder.AddDeveloperSigningCredential();
         }
@@ -53,7 +79,6 @@ namespace IdentityServer
                 app.UseDeveloperExceptionPage();
             }
 
-            // uncomment if you want to add MVC
             app.UseStaticFiles();
             app.UseRouting();
             app.UseIdentityServer();
@@ -62,7 +87,6 @@ namespace IdentityServer
 
             InitializeDatabase(app);
 
-            // uncomment, if you want to add MVC
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

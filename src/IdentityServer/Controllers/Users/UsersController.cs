@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using IdentityServer.Constants;
 using IdentityServer.Models.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers.Users
 {
+    // [Authorize]
     [Route(ControllerConstants.USERS_CONTROLLER)]
     public class UsersController : Controller
     {
