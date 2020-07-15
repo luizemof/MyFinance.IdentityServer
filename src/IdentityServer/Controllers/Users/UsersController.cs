@@ -44,17 +44,26 @@ namespace IdentityServer.Controllers.Users
             return View(userInputModel);
         }
 
-        public async Task<IActionResult> Save(UserInputModel userInputModel, string button)
+        [HttpPost]
+        public async Task<IActionResult> Edit(UserInputModel userInputModel, string button)
         {
-            if (button == ControllerConstants.SAVE)
+            if(button == ControllerConstants.CANCEL)
+                return RedirectToAction(nameof(Index));
+
+            if (ModelState.IsValid)
             {
-                if (string.IsNullOrWhiteSpace(userInputModel.Id))
-                    await UserService.CreateUserAsync(userInputModel);
-                else
-                    await UserService.UpdateUserAsync(userInputModel);
+                if (button == ControllerConstants.SAVE)
+                {
+                    if (string.IsNullOrWhiteSpace(userInputModel.Id))
+                        await UserService.CreateUserAsync(userInputModel);
+                    else
+                        await UserService.UpdateUserAsync(userInputModel);
+                }
+
+                return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction("Index");
+            return View(userInputModel);
         }
 
         [ActionName("Deactivate")]
@@ -65,7 +74,7 @@ namespace IdentityServer.Controllers.Users
             else
                 await UserService.ReactiveUserAsync(id);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
     }
 }

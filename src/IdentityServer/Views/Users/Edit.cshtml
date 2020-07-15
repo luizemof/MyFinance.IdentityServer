@@ -3,28 +3,33 @@
 @model UserInputModel
 
 <div class="container-fluid">
-    <form asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Save">
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Id" value="@Model.Id"/>
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label asp-for="Name">Nome</label>
                 <input asp-for="Name" type="text" class="form-control" value="@Model.Name">
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="form-group col-md-6">
                 <label asp-for="Email">Email</label>
                 <input asp-for="Email" type="email" class="form-control" value="@Model.Email">
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
         </div>
         <div class="form-row">
             <div class="from-group col-md-6">
                 <label asp-for="Password">Senha</label>
-                <input asp-for="Password" type="password" class="form-control"/>
+                <input asp-for="Password" type="password" class="form-control" value="@Model.Password"/>
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             
             <div class="from-group col-md-6">
                 <label asp-for="PasswordConfirmation">Confirmação de Senha</label>
-                <input asp-for="PasswordConfirmation" type="password" class="form-control" />
+                <input asp-for="PasswordConfirmation" type="password" class="form-control" value="@Model.PasswordConfirmation"/>
+                <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
             </div>
         </div>
         <div class="mt-3">

@@ -4,19 +4,19 @@ namespace IdentityServer.Models.Users
 {
     public class UserInputModel
     {
-        [Required]
         public string Id { get; set; }
-        
-        [Required]
+
+        [Required(ErrorMessage = "O Nome é obrigatório.")]
         public string Name { get; set; }
-        
-        [Required]
+
+        [Required(ErrorMessage = "O Email é obrigatório.")]
         public string Email { get; set; }
-        
-        [Required]
+
+        [Required(ErrorMessage = "A Senha é obrigatória.")]
         public string Password { get; set; }
-        
-        [Required]
+
+        [Required(ErrorMessage = "A Confirmação da Senha é obrigatória.")]
+        [Compare(nameof(Password), ErrorMessage = "As Senhas não conferem.")]
         public string PasswordConfirmation { get; set; }
     }
 }

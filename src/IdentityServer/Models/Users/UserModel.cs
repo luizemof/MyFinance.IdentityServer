@@ -17,7 +17,6 @@ namespace IdentityServer.Models.Users
         public string Name { get; }
         public string Email { get; }
         public bool IsActive { get; }
-        public string ActiveOrDeactive { get { return IsActive ? "Desativar" : "Reativar"; } }
 
         public UserModel(string id, string name, string email, bool isActive)
         {

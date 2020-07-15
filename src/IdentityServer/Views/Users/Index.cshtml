@@ -33,8 +33,30 @@
                             else { <td>Não</td> }
 
                             <td class="d-flex justify-content-end">
-                                <a class="btn btn-secondary" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="@user.Id">Editar</a>
-                                <a class="btn btn-danger ml-2" style="min-width: 100px" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Deactivate" asp-route-id="@user.Id" asp-route-isActive="@user.IsActive">@user.ActiveOrDeactive</a>
+                                @if(user.IsActive)
+                                {
+                                    <a class="btn btn-secondary" 
+                                        asp-controller="@ControllerConstants.USERS_CONTROLLER" 
+                                        asp-action="Edit" 
+                                        asp-route-id="@user.Id"
+                                    >Editar</a>
+                                    <a class="btn btn-danger ml-2" 
+                                        style="min-width: 100px" 
+                                        asp-action="Deactivate" 
+                                        asp-route-id="@user.Id"
+                                        asp-route-isActive="true"
+                                    >Desativar</a>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-secondary" disabled>Editar</button>
+                                    <a class="btn btn-danger ml-2" 
+                                        style="min-width: 100px" 
+                                        asp-action="Deactivate" 
+                                        asp-route-id="@user.Id" 
+                                        asp-route-isActive="false"
+                                    >Reativar</a>
+                                }
                             </td>
                         </tr>
                     }
