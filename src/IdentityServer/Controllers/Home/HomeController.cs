@@ -10,8 +10,6 @@ using Microsoft.Extensions.Hosting;
 namespace IdentityServer.Controllers.Home
 {
     [AllowAnonymous]
-    [Route(ControllerConstants.HOME_CONTROLLER)]
-    [Route("")]
     public class HomeController : Controller
     {
         private readonly IIdentityServerInteractionService _interaction;
@@ -23,34 +21,48 @@ namespace IdentityServer.Controllers.Home
             _environment = environment;
         }
 
-        [HttpGet]
+        //
+        // Get: Home/
         public IActionResult Index()
         {
             return View();
         }
-
-        /// <summary>
-        /// Shows the error page
-        /// </summary>
-        [HttpGet("Error")]
-        public async Task<IActionResult> Error(string errorId)
+        
+        public IActionResult Welcome(string name, int numTimes = 1)
         {
-            var vm = new ErrorViewModel();
+            ViewData["Message"] = "Hello " + name;
+            ViewData["NumTimes"] = numTimes;
 
-            // retrieve error details from identityserver
-            var message = await _interaction.GetErrorContextAsync(errorId);
-            if (message != null)
-            {
-                vm.Error = message;
-
-                if (!_environment.IsDevelopment())
-                {
-                    // only show in development
-                    message.ErrorDescription = null;
-                }
-            }
-
-            return View("Error", vm);
+            return View("Index");
         }
+
+        // public string Welcome()
+        // { 
+        //     return "Welcome Luiz";
+        // }
+
+        // /// <summary>
+        // /// Shows the error page
+        // /// </summary>
+        // [HttpGet("Error")]
+        // public async Task<IActionResult> Error(string errorId)
+        // {
+        //     var vm = new ErrorViewModel();
+
+        //     // retrieve error details from identityserver
+        //     var message = await _interaction.GetErrorContextAsync(errorId);
+        //     if (message != null)
+        //     {
+        //         vm.Error = message;
+
+        //         if (!_environment.IsDevelopment())
+        //         {
+        //             // only show in development
+        //             message.ErrorDescription = null;
+        //         }
+        //     }
+
+        //     return View("Error", vm);
+        // }
     }
 }

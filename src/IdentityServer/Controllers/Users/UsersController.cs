@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServer.Controllers.Users
 {
     // [Authorize]
-    [Route(ControllerConstants.USERS_CONTROLLER)]
     public class UsersController : Controller
     {
         private readonly IUserService UserService;
@@ -21,7 +20,6 @@ namespace IdentityServer.Controllers.Users
             UserService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
 
-        [HttpGet, ActionName("Index")]
         public async Task<IActionResult> Index()
         {
             var userTasks = UserService.GetUsersAsync();
@@ -32,7 +30,6 @@ namespace IdentityServer.Controllers.Users
             return View(users);
         }
 
-        [HttpGet("Edit"), ActionName("Edit")]
         public async Task<IActionResult> Edit(string id)
         {
             var userInputModel = new UserInputModel();
@@ -44,10 +41,9 @@ namespace IdentityServer.Controllers.Users
                 userInputModel.Name = user.Name;
             }
 
-            return View("Edit", userInputModel);
+            return View(userInputModel);
         }
 
-        [HttpPost, ActionName("Save")]
         public async Task<IActionResult> Save(UserInputModel userInputModel, string button)
         {
             if (button == ControllerConstants.SAVE)
@@ -58,10 +54,10 @@ namespace IdentityServer.Controllers.Users
                     await UserService.UpdateUserAsync(userInputModel);
             }
 
-            return Redirect(ControllerConstants.USERS_CONTROLLER);
+            return RedirectToAction("Index");
         }
 
-        [HttpGet("Deactivate"), ActionName("Deactivate")]
+        [ActionName("Deactivate")]
         public async Task<IActionResult> DeactivateReactivate(string id, bool isActive)
         {
             if (isActive)

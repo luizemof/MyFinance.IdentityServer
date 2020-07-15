@@ -32,7 +32,7 @@ namespace IdentityServer
         {
             services.AddControllersWithViews();
 
-            services.AddSingleton(new DatabaseSettings(){ ConnectionString = "mongodb://localhost:27017", DatabaseName = "IdentityServer"});
+            services.AddSingleton(new DatabaseSettings() { ConnectionString = "mongodb://localhost:27017", DatabaseName = "IdentityServer" });
             services.AddSingleton(new IdentityServerCryptography(Configuration["EncryptKey"]));
 
             services.ConfigureDatabase(Configuration);
@@ -59,7 +59,9 @@ namespace IdentityServer
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
-               endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
 
