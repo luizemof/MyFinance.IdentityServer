@@ -186,6 +186,54 @@ namespace IdentityServer.Tests.Services.Users
         }
 
         [TestCase]
+        public void GivenItHasInactiveUser_WhenICallReactiveUser_ThenUserShouldBeActivat()
+        {
+            // Given
+            var userId = "1";
+            var userData = new UserData(string.Empty, string.Empty);
+            
+            IEnumerable<UserData> users = new[] { userData };
+            
+            Func<string, bool> checkIdUpdateInput = id => id == userId;
+            Func<bool, bool> checkIsActiveGetInput = isActive => isActive;
+            
+            UserDataAccessMock
+                .Setup(userDataAccess => userDataAccess.UpdateAsync(It.Is<string>(id => checkIdUpdateInput(id)), It.IsAny<UpdateDefinition<UserData>>()))
+                .Returns(Task.FromResult(true));
+
+            UserDataAccessMock
+                .Setup(userDataAccess => userDataAccess.GetAsync(It.Is<string>(id => checkIdUpdateInput(id)), It.Is<bool>(isActive => checkIsActiveGetInput(isActive))))
+                .Returns(Task.FromResult(users));
+
+            // When
+            var user = UserService.ReactiveUserAsync(userId).GetAwaiter().GetResult();
+
+            // Then
+            Assert.IsFalse(user == UserModel.Empty);
+            UserDataAccessMock.Verify(userDataAccess => userDataAccess.UpdateAsync(It.Is<string>(id => checkIdUpdateInput(id)), It.IsAny<UpdateDefinition<UserData>>()), Times.Once);
+            UserDataAccessMock.Verify(userDataAccess => userDataAccess.GetAsync(It.Is<string>(id => checkIdUpdateInput(id)), It.Is<bool>(isActive => checkIsActiveGetInput(isActive))), Times.Once);
+        }
+
+        [TestCase]
+        public void GivenItHasntUser_WhenICallReactiveUser_ThenShouldReturnEmpty()
+        {
+            // Given
+            string userId = "1";
+            Func<string, bool> checkIdUpdateInput = id => id == userId;
+            UserDataAccessMock
+                .Setup(userDataAccess => userDataAccess.UpdateAsync(It.Is<string>(id => checkIdUpdateInput(id)), It.IsAny<UpdateDefinition<UserData>>()))
+                .Returns(Task.FromResult(false));
+
+            // When
+            var user = UserService.ReactiveUserAsync(userId).GetAwaiter().GetResult();
+
+            // Then
+            Assert.IsTrue(user == UserModel.Empty);
+            UserDataAccessMock.Verify(userDataAccess => userDataAccess.UpdateAsync(It.Is<string>(id => checkIdUpdateInput(id)), It.IsAny<UpdateDefinition<UserData>>()), Times.Once);
+            UserDataAccessMock.Verify(userDataAccess => userDataAccess.GetAsync(It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
+        }
+
+        [TestCase]
         public void GivenItHasAUser_WhenICallUpdateUser_ThenShouldReturnUpdatedUser()
         {
             // Given

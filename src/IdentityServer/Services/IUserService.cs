@@ -15,6 +15,8 @@ namespace IdentityServer.Services
         Task<IEnumerable<UserModel>> GetInactiveUsersAsync();
 
         Task<UserModel> DeactiveUserAsync(string id);
+        
+        Task<UserModel> ReactiveUserAsync(string id);
 
         Task<UserModel> UpdateUserAsync(UserInputModel inputUserModel);
     }

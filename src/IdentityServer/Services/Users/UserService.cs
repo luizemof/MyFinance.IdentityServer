@@ -59,13 +59,14 @@ namespace IdentityServer.Services.Users
             return FromUserDataToUser(users);
         }
 
-        public async Task<UserModel> DeactiveUserAsync(string id)
+        public Task<UserModel> DeactiveUserAsync(string id)
         {
-            var updateDefinitionBuilder = new UpdateDefinitionBuilder<UserData>();
-            var updateOption = updateDefinitionBuilder.Set(userData => userData.IsActive, false);
-            var updated = await UserDataAccess.UpdateAsync(id, updateOption);
+            return UserActivate(id, isActive: false);
+        }
 
-            return updated ? await GetUser(id, isActive: false) : UserModel.Empty;
+        public Task<UserModel> ReactiveUserAsync(string id)
+        {
+            return UserActivate(id, isActive: true);
         }
 
         public async Task<UserModel> UpdateUserAsync(UserInputModel updateUserRequest)
@@ -108,6 +109,15 @@ namespace IdentityServer.Services.Users
                 alreadyExistsException.ModelStateDictionary.AddModelError("Email_AlreadyExists", $"The email {email} already exists");
                 throw alreadyExistsException;
             }
+        }
+
+        private async Task<UserModel> UserActivate(string id, bool isActive)
+        {
+            var updateDefinitionBuilder = new UpdateDefinitionBuilder<UserData>();
+            var updateOption = updateDefinitionBuilder.Set(userData => userData.IsActive, isActive);
+            var updated = await UserDataAccess.UpdateAsync(id, updateOption);
+
+            return updated ? await GetUser(id, isActive) : UserModel.Empty;
         }
     }
 }
