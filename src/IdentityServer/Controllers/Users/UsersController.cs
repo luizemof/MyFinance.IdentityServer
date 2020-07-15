@@ -1,12 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Constants;
+using IdentityServer.Exceptions;
 using IdentityServer.Models.Users;
 using IdentityServer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace IdentityServer.Controllers.Users
 {
@@ -47,20 +48,32 @@ namespace IdentityServer.Controllers.Users
         [HttpPost]
         public async Task<IActionResult> Edit(UserInputModel userInputModel, string button)
         {
-            if(button == ControllerConstants.CANCEL)
+            if (button == ControllerConstants.CANCEL)
                 return RedirectToAction(nameof(Index));
 
             if (ModelState.IsValid)
             {
-                if (button == ControllerConstants.SAVE)
+                try
                 {
-                    if (string.IsNullOrWhiteSpace(userInputModel.Id))
-                        await UserService.CreateUserAsync(userInputModel);
-                    else
-                        await UserService.UpdateUserAsync(userInputModel);
-                }
 
-                return RedirectToAction(nameof(Index));
+                    if (button == ControllerConstants.SAVE)
+                    {
+                        if (string.IsNullOrWhiteSpace(userInputModel.Id))
+                            await UserService.CreateUserAsync(userInputModel);
+                        else
+                            await UserService.UpdateUserAsync(userInputModel);
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (AlreadyExistsException ex)
+                {
+                    ModelState.Merge(ex.ModelStateDictionary);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("Error", ex.Message);
+                }
             }
 
             return View(userInputModel);

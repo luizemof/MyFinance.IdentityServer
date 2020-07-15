@@ -37,7 +37,7 @@ namespace IdentityServer.Services.Users
             }
             catch (MongoWriteException ex)
             {
-                ThrowIfDuplicateEmailKey(ex, user.Email);
+                ThrowIfDuplicateEmailKey(ex, user);
                 throw new Exception("An error occours when create a user.");
             }
         }
@@ -69,18 +69,18 @@ namespace IdentityServer.Services.Users
             return UserActivate(id, isActive: true);
         }
 
-        public async Task<UserModel> UpdateUserAsync(UserInputModel updateUserRequest)
+        public async Task<UserModel> UpdateUserAsync(UserInputModel userInputModel)
         {
             try
             {
-                UserValidation.UpdateValidaton(updateUserRequest);
-                var userData = new UserData(updateUserRequest.Id, updateUserRequest.Name, updateUserRequest.Email, updateUserRequest.Password);
+                UserValidation.UpdateValidaton(userInputModel);
+                var userData = new UserData(userInputModel.Id, userInputModel.Name, userInputModel.Email, userInputModel.Password);
                 var updatedUserData = await UserDataAccess.ReplaceAsync(userData);
                 return FromUserDataToUserAPI(updatedUserData);
             }
             catch (MongoWriteException ex)
             {
-                ThrowIfDuplicateEmailKey(ex, updateUserRequest.Email);
+                ThrowIfDuplicateEmailKey(ex, userInputModel);
                 throw new Exception("An error occours when update a user.");
             }
         }
@@ -101,12 +101,12 @@ namespace IdentityServer.Services.Users
             return userData != null ? new UserModel(userData.Id, userData.Name, userData.Email, userData.IsActive) : UserModel.Empty;
         }
 
-        private void ThrowIfDuplicateEmailKey(MongoWriteException ex, string email)
+        private void ThrowIfDuplicateEmailKey(MongoWriteException ex, UserInputModel user)
         {
             if (ex.WriteError != null && ex.WriteError.Category == ServerErrorCategory.DuplicateKey && ex.WriteError.Code == 11000)
             {
                 var alreadyExistsException = new AlreadyExistsException();
-                alreadyExistsException.ModelStateDictionary.AddModelError("Email_AlreadyExists", $"The email {email} already exists");
+                alreadyExistsException.ModelStateDictionary.AddModelError(nameof(user.Email), $"O email '{user.Email}' já existe.");
                 throw alreadyExistsException;
             }
         }
