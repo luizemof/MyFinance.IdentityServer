@@ -103,14 +103,13 @@ namespace IdentityServer.Tests.Services.ApiScope
             // Given
             var id = "1";
             var apiScopeData = new ApiScopeData(id, name: "ApiScope", displayName: "Api Scope", description: "Api Scope Description", enabled: true);
-            Func<string, bool> checkId = (dataId) => dataId == id;
 
             ApiScopeDataAccessMock
                 .Setup(dataAccess => dataAccess.GetAsync(It.IsAny<FilterDefinition<ApiScopeData>>()))
                 .ReturnsAsync(new[] { apiScopeData }.AsEnumerable());
 
             ApiScopeDataAccessMock
-                .Setup(dataAccess => dataAccess.UpdateAsync(It.Is<string>(dataId => checkId(dataId)), It.IsAny<UpdateDefinition<ApiScopeData>>()))
+                .Setup(dataAccess => dataAccess.UpdateAsync(It.IsAny<Expression<Func<ApiScopeData, string>>>(), It.IsAny<string>(), It.IsAny<UpdateDefinition<ApiScopeData>>()))
                 .ReturnsAsync(true);
 
             // When
@@ -118,7 +117,7 @@ namespace IdentityServer.Tests.Services.ApiScope
 
             // Then
             ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.GetAsync(It.IsAny<FilterDefinition<ApiScopeData>>()), Times.Once);
-            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.UpdateAsync(It.Is<string>(dataId => checkId(dataId)), It.IsAny<UpdateDefinition<ApiScopeData>>()), Times.Once);
+            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.UpdateAsync(It.IsAny<Expression<Func<ApiScopeData, string>>>(), It.IsAny<string>(), It.IsAny<UpdateDefinition<ApiScopeData>>()), Times.Once);
             Assert.IsTrue(CheckApiScopeAndApiScopeData(apiScopeData, apiScope));
         }
 

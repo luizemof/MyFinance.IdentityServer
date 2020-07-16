@@ -28,15 +28,5 @@ namespace IdentityServer.Repository.ApiScopes
             var filter = filterDefinitionBuilder.Where(data => data.Id == apiScopeData.Id);
             var replaceResult = await Collection.ReplaceOneAsync(filter, apiScopeData);
         }
-
-        public async Task<bool> UpdateAsync(string id, UpdateDefinition<ApiScopeData> updateDefinition)
-        {
-            var filterDefinitionBuilder = new FilterDefinitionBuilder<ApiScopeData>();
-            var filter = filterDefinitionBuilder.Eq(data => data.Id, id);
-
-            var updateResult = await Collection.UpdateOneAsync(filter, updateDefinition);
-
-            return updateResult.IsAcknowledged;
-        }
     }
 }

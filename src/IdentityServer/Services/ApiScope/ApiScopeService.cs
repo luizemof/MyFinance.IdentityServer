@@ -67,17 +67,9 @@ namespace IdentityServer.Services.ApiScope
         {
             var updateDefinitionBuilder = new UpdateDefinitionBuilder<ApiScopeData>();
             var updateDefinition = updateDefinitionBuilder.Set(scopeData => scopeData.Enabled, isEnabled);
-            var updated = await ApiScopeDataAccess.UpdateAsync(id, updateDefinition);
+            var updated = await ApiScopeDataAccess.UpdateAsync(data => data.Id, id, updateDefinition);
 
             return updated ? await GetApiScopeById(id) : default(ApiScopeModel);
         }
-
-        // private async Task<ApiScopeModel> GetApiScopeByField<T>(Expression<Func<ApiScopeData, T>> field, T value)
-        // {
-        //     var filterBuilder = new FilterDefinitionBuilder<ApiScopeData>();
-        //     var filter = filterBuilder.Eq(field, value);
-        //     var apiScopesData = await ApiScopeDataAccess.GetAsync(filter);
-        //     return FromApiScopeData(apiScopesData.Single());
-        // }
     }
 }

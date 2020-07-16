@@ -47,5 +47,15 @@ namespace IdentityServer.Controllers.IdentityResource
 
             return View(input);
         }
+
+        public async Task<IActionResult> Enabled(string id, bool isEnabled)
+        {
+            if(isEnabled)
+                await IdentityResourceService.Disable(id);
+            else
+                await IdentityResourceService.Enable(id);
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

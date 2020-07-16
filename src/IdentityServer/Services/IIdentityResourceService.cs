@@ -11,5 +11,9 @@ namespace IdentityServer.Services
          Task<IdentityResourceModel> GetIdentityResourceById(string id);
          
          Task UpsertIdentityResource(IdentityResourceInputModel identityResourceInputModel);
+
+         Task<IdentityResourceModel> Enable(string id);
+         
+         Task<IdentityResourceModel> Disable(string id);
     }
 }

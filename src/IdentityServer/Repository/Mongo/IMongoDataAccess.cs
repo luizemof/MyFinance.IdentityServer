@@ -17,5 +17,7 @@ namespace IdentityServer.Repository.Mongo
         Task InsertAsync(T apiScopeData);
 
         Task<bool> ReplaceAsync(T apiScopeData, Expression<Func<T, bool>> expression);
+
+        Task<bool> UpdateAsync<TFilterField>(Expression<Func<T, TFilterField>> field, TFilterField filterField,  UpdateDefinition<T> updateDefinition);
     }
 }

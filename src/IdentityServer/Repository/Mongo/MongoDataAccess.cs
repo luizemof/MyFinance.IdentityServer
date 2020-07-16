@@ -52,5 +52,15 @@ namespace IdentityServer.Repository.Mongo
             
             return apiScopesData.SingleOrDefault();
         }
+
+        public async Task<bool> UpdateAsync<TFilterField>(Expression<Func<T, TFilterField>> field, TFilterField filterField,  UpdateDefinition<T> updateDefinition)
+        {
+            var filterDefinitionBuilder = new FilterDefinitionBuilder<T>();
+            var filter = filterDefinitionBuilder.Eq(field, filterField);
+
+            var updateResult = await Collection.UpdateOneAsync(filter, updateDefinition);
+
+            return updateResult.IsAcknowledged;
+        }
     }
 }

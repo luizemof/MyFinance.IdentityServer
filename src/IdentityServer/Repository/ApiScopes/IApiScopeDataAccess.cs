@@ -7,6 +7,5 @@ namespace IdentityServer.Repository.ApiScopes
 {
     public interface IApiScopeDataAccess : IMongoDataAccess<ApiScopeData>
     {
-        Task<bool> UpdateAsync(string id, UpdateDefinition<ApiScopeData> updateDefinition);
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using IdentityServer.Extensions;
 using IdentityServer.Models.IdentityResource;
 using IdentityServer.Repository.IdentityResource;
+using MongoDB.Driver;
 
 namespace IdentityServer.Services.IdentityResource
 {
@@ -51,6 +52,25 @@ namespace IdentityServer.Services.IdentityResource
         {
             var data = await IdentityResourceDataAccess.GetByField(data => data.Id, id);
             return data.ToModel();
+        }
+
+        public Task<IdentityResourceModel> Enable(string id)
+        {
+            return EnableOrDisable(id, isEnabled: true);
+        }
+
+        public Task<IdentityResourceModel> Disable(string id)
+        {
+            return EnableOrDisable(id, isEnabled: false);
+        }
+
+        private async Task<IdentityResourceModel> EnableOrDisable(string id, bool isEnabled)
+        {
+            var updateDefinitionBuilder = new UpdateDefinitionBuilder<IdentityResourceData>();
+            var updateDefinition = updateDefinitionBuilder.Set(data => data.Enabled, isEnabled);
+            var updated = await IdentityResourceDataAccess.UpdateAsync(data => data.Id, id, updateDefinition);
+
+            return updated ? await GetIdentityResourceById(id) : default(IdentityResourceModel);
         }
     }
 }
