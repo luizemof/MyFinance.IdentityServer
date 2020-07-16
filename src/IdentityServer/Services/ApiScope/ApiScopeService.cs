@@ -34,14 +34,16 @@ namespace IdentityServer.Services.ApiScope
             return apiScopesData.Select(data => FromApiScopeData(data)).ToList();
         }
 
-        public Task<ApiScopeModel> GetApiScopeById(string id)
+        public async Task<ApiScopeModel> GetApiScopeById(string id)
         {
-            return GetApiScopeByField(data => data.Id, id);
+            var data = await ApiScopeDataAccess.GetByField(data => data.Id, id);
+            return FromApiScopeData(data);
         }
 
-        public Task<ApiScopeModel> GetApiScopeByName(string name)
+        public async Task<ApiScopeModel> GetApiScopeByName(string name)
         {
-            return GetApiScopeByField(data => data.Name, name);
+            var data = await ApiScopeDataAccess.GetByField(data => data.Name, name);
+            return FromApiScopeData(data);
         }
 
         public Task UpsertApiScopeAsync(ApiScopeInputModel apiScopeInputModel)
@@ -51,7 +53,7 @@ namespace IdentityServer.Services.ApiScope
             if(string.IsNullOrEmpty(apiScopeData.Id))
                 upsertTask= ApiScopeDataAccess.InsertAsync(apiScopeData);
             else
-                upsertTask = ApiScopeDataAccess.ReplaceAsync(apiScopeData);
+                upsertTask = ApiScopeDataAccess.ReplaceAsync(apiScopeData, data => data.Id == apiScopeData.Id);
 
             return upsertTask;
         }
@@ -70,12 +72,12 @@ namespace IdentityServer.Services.ApiScope
             return updated ? await GetApiScopeById(id) : default(ApiScopeModel);
         }
 
-        private async Task<ApiScopeModel> GetApiScopeByField<T>(Expression<Func<ApiScopeData, T>> field, T value)
-        {
-            var filterBuilder = new FilterDefinitionBuilder<ApiScopeData>();
-            var filter = filterBuilder.Eq(field, value);
-            var apiScopesData = await ApiScopeDataAccess.GetAsync(filter);
-            return FromApiScopeData(apiScopesData.Single());
-        }
+        // private async Task<ApiScopeModel> GetApiScopeByField<T>(Expression<Func<ApiScopeData, T>> field, T value)
+        // {
+        //     var filterBuilder = new FilterDefinitionBuilder<ApiScopeData>();
+        //     var filter = filterBuilder.Eq(field, value);
+        //     var apiScopesData = await ApiScopeDataAccess.GetAsync(filter);
+        //     return FromApiScopeData(apiScopesData.Single());
+        // }
     }
 }

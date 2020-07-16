@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer.Extensions;
 using IdentityServer.Models.IdentityResource;
 using IdentityServer.Repository.IdentityResource;
 
@@ -21,10 +22,16 @@ namespace IdentityServer.Services.IdentityResource
             return datas.Select(data => FromIdentityResourceData(data)).ToList();
         }
 
-        public Task InsertIdentityResource(IdentityResourceInputModel model)
+        public Task UpsertIdentityResource(IdentityResourceInputModel model)
         {
             var data = new IdentityResourceData(model.Id, model.Name, model.DisplayName, model.Description, model.UserClaims);
-            return IdentityResourceDataAccess.InsertAsync(data);
+            Task operationTask;
+            if(string.IsNullOrWhiteSpace(model.Id))
+                operationTask = IdentityResourceDataAccess.InsertAsync(data);
+            else
+                operationTask = IdentityResourceDataAccess.ReplaceAsync(data, updateData=> updateData.Id == data.Id);
+            
+            return operationTask;
         }
 
         public IdentityResourceModel FromIdentityResourceData(IdentityResourceData data)
@@ -38,6 +45,12 @@ namespace IdentityServer.Services.IdentityResource
                 Enabled = data.Enabled,
                 UserClaims = data.UserClaims
             };
+        }
+
+        public async Task<IdentityResourceModel> GetIdentityResourceById(string id)
+        {
+            var data = await IdentityResourceDataAccess.GetByField(data => data.Id, id);
+            return data.ToModel();
         }
     }
 }

@@ -32,8 +32,8 @@
                                 string activeButtonDescription;
                                 string disabled = string.Empty;
                                 string activeButtonClass = string.Empty;
-                                string claims = string.Join(" | ", identity.UserClaims);
-                                string claimsToolTip = string.Join(" <br> ", identity.UserClaims);
+                                string claims = identity.UserClaims?.Count > 0 ? string.Join(" | ", identity.UserClaims) : string.Empty; 
+                                string claimsToolTip = identity.UserClaims?.Count > 0 ? string.Join(" <br> ", identity.UserClaims) : string.Empty;
                                 if(identity.Enabled) 
                                 {
                                     active = "Sim";

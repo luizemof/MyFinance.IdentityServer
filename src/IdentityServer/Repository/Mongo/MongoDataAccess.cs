@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 
@@ -30,6 +33,24 @@ namespace IdentityServer.Repository.Mongo
         public Task InsertAsync(T apiScopeData)
         {
             return Collection.InsertOneAsync(apiScopeData);
+        }
+
+        public async Task<bool> ReplaceAsync(T apiScopeData, Expression<Func<T, bool>> expression)
+        {
+            var filterDefinitionBuilder = new FilterDefinitionBuilder<T>();
+            var filter = filterDefinitionBuilder.Where(expression);
+            var replaceResult = await Collection.ReplaceOneAsync(filter, apiScopeData);
+
+            return replaceResult.IsAcknowledged;
+        }
+
+        public async Task<T> GetByField<TField>(Expression<Func<T, TField>> field, TField value)
+        {
+            var filterBuilder = new FilterDefinitionBuilder<T>();
+            var filter = filterBuilder.Eq(field, value);
+            var apiScopesData = await GetAsync(filter);
+            
+            return apiScopesData.SingleOrDefault();
         }
     }
 }

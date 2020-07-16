@@ -8,6 +8,8 @@ namespace IdentityServer.Services
     {
          Task<IEnumerable<IdentityResourceModel>> GetAllIdentityResources();
          
-         Task InsertIdentityResource(IdentityResourceInputModel identityResourceInputModel);
+         Task<IdentityResourceModel> GetIdentityResourceById(string id);
+         
+         Task UpsertIdentityResource(IdentityResourceInputModel identityResourceInputModel);
     }
 }

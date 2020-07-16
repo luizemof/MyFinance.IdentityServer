@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using IdentityServer.Models.ApiScope;
 using IdentityServer.Repository.ApiScopes;
@@ -17,6 +18,8 @@ namespace IdentityServer.Tests.Services.ApiScope
     {
         private IApiScopeService ApiScopeService;
         private Mock<IApiScopeDataAccess> ApiScopeDataAccessMock;
+
+        private Expression<Func<ApiScopeData, bool>> ExpressionItsAny = It.IsAny<Expression<Func<ApiScopeData, bool>>>();
 
         [SetUp]
         public void Setup()
@@ -68,7 +71,7 @@ namespace IdentityServer.Tests.Services.ApiScope
 
             // Then
             ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.InsertAsync(It.IsAny<ApiScopeData>()), Times.Once);
-            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ApiScopeData>()), Times.Never);
+            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ApiScopeData>(), ExpressionItsAny), Times.Never);
         }
 
         [Test]
@@ -83,14 +86,14 @@ namespace IdentityServer.Tests.Services.ApiScope
             };
 
             ApiScopeDataAccessMock
-                .Setup(apiScopeDataAccess => apiScopeDataAccess.ReplaceAsync(It.IsAny<ApiScopeData>()))
-                .Returns(Task.CompletedTask);
+                .Setup(apiScopeDataAccess => apiScopeDataAccess.ReplaceAsync(It.IsAny<ApiScopeData>(), ExpressionItsAny))
+                .ReturnsAsync(true);
 
             // When
             ApiScopeService.UpsertApiScopeAsync(apiScopeInputModel).GetAwaiter().GetResult();
 
             // Then
-            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ApiScopeData>()), Times.Once);
+            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ApiScopeData>(), ExpressionItsAny), Times.Once);
             ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.InsertAsync(It.IsAny<ApiScopeData>()), Times.Never);
         }
 
