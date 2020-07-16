@@ -1,0 +1,74 @@
+@using IdentityServer.Models.IdentityResource
+@using System.Collections.Generic
+@using IdentityServer.Constants
+
+@model IEnumerable<IdentityResourceModel>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col d-flex justify-content-end">
+            <a class="btn btn-primary mb-2" asp-action="Edit">Nova Identidade</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nome</th>
+                            <th scope="col">Nome de exibição</th>
+                            <th scope="col">Descrição</th>
+                            <th scope="col">Ativo</th>
+                            <th scope="col">Claims</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            @foreach (var identity in Model)
+                            {
+                                string active;
+                                string activeButtonDescription;
+                                string disabled = string.Empty;
+                                string activeButtonClass = string.Empty;
+                                string claims = string.Join(" | ", identity.UserClaims);
+                                string claimsToolTip = string.Join(" <br> ", identity.UserClaims);
+                                if(identity.Enabled) 
+                                {
+                                    active = "Sim";
+                                    activeButtonDescription = "Desativar";
+                                    activeButtonClass = "btn btn-danger";
+                                }
+                                else
+                                {
+                                    active = "Não";
+                                    activeButtonDescription = "Ativar";
+                                    disabled = "disabled";
+                                    activeButtonClass = "btn btn-success";
+                                }
+
+                                <tr>
+                                    <th scope="row">@identity.Name</th>
+                                    <td>@identity.DisplayName</td>
+                                    <td>@identity.Description</td>
+                                    <td>@active</td>
+                                    <td class="text-break" data-placement="right" data-toggle="tooltip" data-html="true" title="@claimsToolTip">
+                                        <span style="display: block;max-width: 300px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">@claims</span>
+                                    </td>
+                                    <td class="d-flex justify-content-end">
+                                        <a class="btn btn-secondary @disabled" asp-action="@ControllerConstants.EDIT" asp-route-id="@identity.Id">Editar</a>
+                                        <a class="@activeButtonClass ml-2" style="min-width: 100px" 
+                                            asp-action="Enabled" 
+                                            asp-route-id="@identity.Id" 
+                                            asp-route-isEnabled="@identity.Enabled"
+                                        >@activeButtonDescription</a>
+                                    </td>
+                                </tr>
+                            }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

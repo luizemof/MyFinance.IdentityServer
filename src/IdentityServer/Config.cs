@@ -3,6 +3,7 @@
 
 
 using IdentityServer.Models.ApiScope;
+using IdentityServer.Models.IdentityResource;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
 using System;
@@ -13,12 +14,35 @@ namespace IdentityServer
 {
     public static class Config
     {
-        public static IEnumerable<IdentityResource> IdentityResources =>
-            new IdentityResource[]
+        public static IEnumerable<IdentityResourceInputModel> IdentityResources
+        {
+            get
             {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
-            };
+                var openId = new IdentityResources.OpenId();
+                var profile = new IdentityResources.Profile();
+                var openIdModel = new IdentityResourceInputModel()
+                {
+                    Name = openId.Name,
+                    DisplayName = openId.DisplayName,
+                    Description = openId.Description,
+                    UserClaims = openId.UserClaims
+                };
+                var profileModel = new IdentityResourceInputModel()
+                {
+                    Name = profile.Name,
+                    DisplayName = profile.DisplayName,
+                    Description = profile.Description,
+                    UserClaims = profile.UserClaims
+                };
+            
+                return new IdentityResourceInputModel[]
+                {
+                    openIdModel,
+                    profileModel
+                };
+            }
+
+        }
 
         public static IEnumerable<ApiScopeInputModel> ApiScopes =>
             new ApiScopeInputModel[]

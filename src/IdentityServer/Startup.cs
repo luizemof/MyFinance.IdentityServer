@@ -83,9 +83,10 @@ namespace IdentityServer
             //  --IdentityResource
             if (!repository.CollectionExists<IdentityResource>())
             {
+                var identityResource = app.ApplicationServices.GetService<Services.IIdentityResourceService>();
                 foreach (var res in Config.IdentityResources)
                 {
-                    repository.Add<IdentityResource>(res);
+                    identityResource.InsertIdentityResource(res);
                 }
                 createdNewRepository = true;
             }

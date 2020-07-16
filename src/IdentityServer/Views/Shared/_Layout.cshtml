@@ -29,6 +29,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.API_SCOPE_CONTROLLER" asp-action="Index">Escopos</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.IDENTITY_RESOURCE_CONTROLLER" asp-action="Index">Recurso de Identidade</a>
+                            </li>
                         </ul>
                     </div>
 
@@ -55,6 +58,11 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
