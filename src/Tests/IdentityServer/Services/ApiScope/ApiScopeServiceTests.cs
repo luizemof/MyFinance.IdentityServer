@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer.Models.ApiScope;
 using IdentityServer.Repository.ApiScopes;
 using IdentityServer.Services;
 using IdentityServer.Services.ApiScope;
@@ -39,7 +40,7 @@ namespace IdentityServer.Tests.Services.ApiScope
                 .ReturnsAsync(apiScopesData.AsEnumerable());
 
             // When
-            var apiScopes = ApiScopeService.GetAllScopesAsync().GetAwaiter().GetResult();
+            var apiScopes = ApiScopeService.GetAllApiScopesAsync().GetAwaiter().GetResult();
 
             // Then
             ApiScopeDataAccessMock.Verify(apiScopeDataAccess => apiScopeDataAccess.GetAsync(), Times.Once);
@@ -52,17 +53,45 @@ namespace IdentityServer.Tests.Services.ApiScope
         public void GivenItHasANewApiScope_WhenItCallsInsertApiScopes_ThenShouldInsert()
         {
             // Given
-            var apiScope = new IdentityApiScope(name: "API1", displayName: "API 1");
+            var apiScopeInputModel = new ApiScopeInputModel()
+            {
+                Name = "API1",
+                DisplayName = "API 1"
+            };
 
             ApiScopeDataAccessMock
-                .Setup(apiScopeDataAccess => apiScopeDataAccess.InsertAsync(It.Is<ApiScopeData>(data => CheckApiScopeAndApiScopeData(data, apiScope))))
+                .Setup(apiScopeDataAccess => apiScopeDataAccess.InsertAsync(It.IsAny<ApiScopeData>()))
                 .Returns(Task.CompletedTask);
 
             // When
-            ApiScopeService.InsertApiScopeAsync(apiScope).GetAwaiter().GetResult();
+            ApiScopeService.UpsertApiScopeAsync(apiScopeInputModel).GetAwaiter().GetResult();
 
             // Then
-            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.InsertAsync(It.Is<ApiScopeData>(data => CheckApiScopeAndApiScopeData(data, apiScope))), Times.Once);
+            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.InsertAsync(It.IsAny<ApiScopeData>()), Times.Once);
+            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ApiScopeData>()), Times.Never);
+        }
+
+        [Test]
+        public void GivenItHasApiScope_WhenItCallsUpsertApiScopes_ThenShouldCallReplace()
+        {
+            // Given
+            var apiScopeInputModel = new ApiScopeInputModel()
+            {
+                Id = "1",
+                Name = "API1",
+                DisplayName = "API 1"
+            };
+
+            ApiScopeDataAccessMock
+                .Setup(apiScopeDataAccess => apiScopeDataAccess.ReplaceAsync(It.IsAny<ApiScopeData>()))
+                .Returns(Task.CompletedTask);
+
+            // When
+            ApiScopeService.UpsertApiScopeAsync(apiScopeInputModel).GetAwaiter().GetResult();
+
+            // Then
+            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ApiScopeData>()), Times.Once);
+            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.InsertAsync(It.IsAny<ApiScopeData>()), Times.Never);
         }
 
         [Test]
@@ -72,7 +101,7 @@ namespace IdentityServer.Tests.Services.ApiScope
             var id = "1";
             var apiScopeData = new ApiScopeData(id, name: "ApiScope", displayName: "Api Scope", description: "Api Scope Description", enabled: true);
             Func<string, bool> checkId = (dataId) => dataId == id;
-           
+
             ApiScopeDataAccessMock
                 .Setup(dataAccess => dataAccess.GetAsync(It.IsAny<FilterDefinition<ApiScopeData>>()))
                 .ReturnsAsync(new[] { apiScopeData }.AsEnumerable());

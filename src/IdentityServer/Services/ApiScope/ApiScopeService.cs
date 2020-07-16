@@ -27,13 +27,13 @@ namespace IdentityServer.Services.ApiScope
             return Enable(id, isEnabled: false);
         }
 
-        public async Task<IEnumerable<ApiScopeModel>> GetAllScopesAsync()
+        public async Task<IEnumerable<ApiScopeModel>> GetAllApiScopesAsync()
         {
             var apiScopesData = await ApiScopeDataAccess.GetAsync();
             return apiScopesData.Select(data => FromApiScopeData(data)).ToList();
         }
 
-        private async Task<ApiScopeModel> GetApiScopeById(string id)
+        public async Task<ApiScopeModel> GetApiScopeById(string id)
         {
             var filterBuilder = new FilterDefinitionBuilder<ApiScopeData>();
             var filter = filterBuilder.Eq(data => data.Id, id);
@@ -41,9 +41,16 @@ namespace IdentityServer.Services.ApiScope
             return FromApiScopeData(apiScopesData.Single());
         }
 
-        public Task InsertApiScopeAsync(IdentityApiScope apiScope)
+        public Task UpsertApiScopeAsync(ApiScopeInputModel apiScopeInputModel)
         {
-            return ApiScopeDataAccess.InsertAsync(new ApiScopeData(apiScope.Name, apiScope.DisplayName, apiScope.Description));
+            var apiScopeData = new ApiScopeData(apiScopeInputModel.Id, apiScopeInputModel.Name, apiScopeInputModel.DisplayName, apiScopeInputModel.Description);
+            Task upsertTask;
+            if(string.IsNullOrEmpty(apiScopeData.Id))
+                upsertTask= ApiScopeDataAccess.InsertAsync(apiScopeData);
+            else
+                upsertTask = ApiScopeDataAccess.ReplaceAsync(apiScopeData);
+
+            return upsertTask;
         }
 
         private ApiScopeModel FromApiScopeData(ApiScopeData data)

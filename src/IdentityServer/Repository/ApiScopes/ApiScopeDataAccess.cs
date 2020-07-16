@@ -30,6 +30,13 @@ namespace IdentityServer.Repository.ApiScopes
             return ApiScopeCollection.InsertOneAsync(apiScopeData);
         }
 
+        public async Task ReplaceAsync(ApiScopeData apiScopeData)
+        {
+            var filterDefinitionBuilder = new FilterDefinitionBuilder<ApiScopeData>();
+            var filter = filterDefinitionBuilder.Where(data => data.Id == apiScopeData.Id);
+            var replaceResult = await ApiScopeCollection.ReplaceOneAsync(filter, apiScopeData);
+        }
+
         public async Task<bool> UpdateAsync(string id, UpdateDefinition<ApiScopeData> updateDefinition)
         {
             var filterDefinitionBuilder = new FilterDefinitionBuilder<ApiScopeData>();

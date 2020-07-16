@@ -5,9 +5,10 @@ namespace IdentityServer.Constants
         public const string HOME_CONTROLLER = "Home";
         public const string ACCOUNT_CONTROLLER = "Account";
         public const string USERS_CONTROLLER = "Users";
-        public const string SCOPES_CONTROLLER = "ApiScope";
+        public const string API_SCOPE_CONTROLLER = "ApiScope";
 
         public const string SAVE = "Save";
         public const string CANCEL = "Cancel";
+        public const string EDIT = "Edit";
     }
 }

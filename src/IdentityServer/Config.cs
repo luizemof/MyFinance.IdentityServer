@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer.Models.ApiScope;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
 using System;
@@ -19,15 +20,19 @@ namespace IdentityServer
                 new IdentityResources.Profile()
             };
 
-        public static IEnumerable<ApiScope> ApiScopes =>
-            new ApiScope[]
+        public static IEnumerable<ApiScopeInputModel> ApiScopes =>
+            new ApiScopeInputModel[]
             {
-                new ApiScope("IdentityServerAdmin", "Identity Server Administrator")
+                new ApiScopeInputModel()
                 {
+                    Name = "IdentityServerAdmin",
+                    DisplayName = "Identity Server Administrator",
                     Description = "Scope for Identity Server Administrators"
                 },
-                new ApiScope("MyFinanceApi", "My Finance API")
+                new ApiScopeInputModel()
                 {
+                    Name = "MyFinanceApi",
+                    DisplayName = "My Finance API",
                     Description = "Scope for My Finance API"
                 }
             };

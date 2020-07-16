@@ -97,7 +97,7 @@ namespace IdentityServer
                 var apiScopeService = app.ApplicationServices.GetService<Services.IApiScopeService>();
                 foreach (var api in Config.ApiScopes)
                 {
-                    apiScopeService.InsertApiScopeAsync(api).GetAwaiter().GetResult();
+                    apiScopeService.UpsertApiScopeAsync(api).GetAwaiter().GetResult();
                 }
                 createdNewRepository = true;
             }

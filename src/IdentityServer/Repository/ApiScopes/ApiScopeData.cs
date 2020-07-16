@@ -29,6 +29,9 @@ namespace IdentityServer.Repository.ApiScopes
             Description = description;
             Enabled = enabled;
         }
+        
+        public ApiScopeData(string id, string name, string displayName, string description):this(id, name, displayName, description, enabled: true)
+        { }
 
         public ApiScopeData(string name, string displayName, string description) : this(id: string.Empty, name, displayName, description, enabled: true)
         { }
