@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IdentityServer.Repository.Mongo;
 using MongoDB.Driver;
 
 namespace IdentityServer.Repository.Users
 {
-    public class UserDataAccess : IUserDataAccess
+    public class UserDataAccess : MongoDataAccess<UserData>, IUserDataAccess
     {
-        private readonly IMongoCollection<UserData> UserCollection;
+        protected override string CollectionName => "UserCollection";
 
-        public UserDataAccess(IMongoDatabase database)
+        public UserDataAccess(IMongoDatabase database) : base(database)
         {
-            UserCollection = database.GetCollection<UserData>("UserCollection");
             CreateIndexes();
         }
 
@@ -19,17 +19,12 @@ namespace IdentityServer.Repository.Users
             var keys = Builders<UserData>.IndexKeys.Ascending("Email");
             var indexOptions = new CreateIndexOptions { Unique = true };
             var model = new CreateIndexModel<UserData>(keys, indexOptions);
-            UserCollection.Indexes.CreateOne(model);
-        }
-
-        public Task CreateAsync(UserData user)
-        {
-            return UserCollection.InsertOneAsync(user);
+            Collection.Indexes.CreateOne(model);
         }
 
         public Task<UserData> DeleteAscyn(string id)
         {
-            return UserCollection.FindOneAndDeleteAsync<UserData>(data => data.Id == id);
+            return Collection.FindOneAndDeleteAsync<UserData>(data => data.Id == id);
         }
 
         public Task<IEnumerable<UserData>> GetAsync(string id = null, bool? isActive = true)
@@ -50,7 +45,7 @@ namespace IdentityServer.Repository.Users
         {
             var filterDefinitionBuilder = new FilterDefinitionBuilder<UserData>();
             var filter = filterDefinitionBuilder.Where(data => data.Id == user.Id);
-            var replaceResult = await UserCollection.ReplaceOneAsync(filter, user);
+            var replaceResult = await Collection.ReplaceOneAsync(filter, user);
 
             return replaceResult.IsAcknowledged ? user : default(UserData);
         }
@@ -60,15 +55,9 @@ namespace IdentityServer.Repository.Users
             var filterDefinitionBuilder = new FilterDefinitionBuilder<UserData>();
             var filter = filterDefinitionBuilder.Eq(userData => userData.Id, id);
 
-            var updateResult = await UserCollection.UpdateOneAsync(filter, updateDefinition);
+            var updateResult = await Collection.UpdateOneAsync(filter, updateDefinition);
 
             return updateResult.IsAcknowledged;
-        }
-
-        public async Task<IEnumerable<UserData>> GetAsync(FilterDefinition<UserData> filter)
-        {
-            var result = await UserCollection.FindAsync<UserData>(filter);
-            return result.ToList();
         }
     }
 }

@@ -1,40 +1,32 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IdentityServer.Repository.Mongo;
 using MongoDB.Driver;
 
 namespace IdentityServer.Repository.ApiScopes
 {
-    public class ApiScopeDataAccess : IApiScopeDataAccess
+    public class ApiScopeDataAccess : MongoDataAccess<ApiScopeData>, IApiScopeDataAccess
     {
-        private readonly IMongoCollection<ApiScopeData> ApiScopeCollection;
-        
-        public ApiScopeDataAccess(IMongoDatabase database)
+        protected override string CollectionName => "ApiScope";
+
+        public ApiScopeDataAccess(IMongoDatabase database) : base(database)
         {
-            ApiScopeCollection = database.GetCollection<ApiScopeData>("ApiScope");
+            CreateIndexes();
         }
 
-        public Task<IEnumerable<ApiScopeData>> GetAsync()
+        private void CreateIndexes()
         {
-            var filter = FilterDefinition<ApiScopeData>.Empty;   
-            return GetAsync(filter);
-        }
-
-        public async Task<IEnumerable<ApiScopeData>> GetAsync(FilterDefinition<ApiScopeData> filter)
-        {
-            var apiScopes=  await ApiScopeCollection.FindAsync(filter);
-            return apiScopes.ToEnumerable();
-        }
-
-        public Task InsertAsync(ApiScopeData apiScopeData)
-        {
-            return ApiScopeCollection.InsertOneAsync(apiScopeData);
+            var keys = Builders<ApiScopeData>.IndexKeys.Ascending("Name");
+            var indexOptions = new CreateIndexOptions { Unique = true };
+            var model = new CreateIndexModel<ApiScopeData>(keys, indexOptions);
+            Collection.Indexes.CreateOne(model);
         }
 
         public async Task ReplaceAsync(ApiScopeData apiScopeData)
         {
             var filterDefinitionBuilder = new FilterDefinitionBuilder<ApiScopeData>();
             var filter = filterDefinitionBuilder.Where(data => data.Id == apiScopeData.Id);
-            var replaceResult = await ApiScopeCollection.ReplaceOneAsync(filter, apiScopeData);
+            var replaceResult = await Collection.ReplaceOneAsync(filter, apiScopeData);
         }
 
         public async Task<bool> UpdateAsync(string id, UpdateDefinition<ApiScopeData> updateDefinition)
@@ -42,7 +34,7 @@ namespace IdentityServer.Repository.ApiScopes
             var filterDefinitionBuilder = new FilterDefinitionBuilder<ApiScopeData>();
             var filter = filterDefinitionBuilder.Eq(data => data.Id, id);
 
-            var updateResult = await ApiScopeCollection.UpdateOneAsync(filter, updateDefinition);
+            var updateResult = await Collection.UpdateOneAsync(filter, updateDefinition);
 
             return updateResult.IsAcknowledged;
         }

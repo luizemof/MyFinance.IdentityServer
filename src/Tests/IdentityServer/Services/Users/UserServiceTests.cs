@@ -55,7 +55,7 @@ namespace IdentityServer.Tests.Services.Users
 
             // Then
             Assert.IsFalse(userData == UserModel.Empty);
-            UserDataAccessMock.Verify(userDataAccess => userDataAccess.CreateAsync(It.IsAny<UserData>()), Times.Once);
+            UserDataAccessMock.Verify(userDataAccess => userDataAccess.InsertAsync(It.IsAny<UserData>()), Times.Once);
             UserDataAccessMock.Verify(userDataAccess => userDataAccess.GetAsync(It.Is<string>(id => checkGetAsyncInputMock(id)), It.IsAny<bool>()), Times.Once);
         }
 
@@ -70,7 +70,7 @@ namespace IdentityServer.Tests.Services.Users
             };
 
             UserDataAccessMock
-                .Setup(userDataAccess => userDataAccess.CreateAsync(It.IsAny<UserData>()))
+                .Setup(userDataAccess => userDataAccess.InsertAsync(It.IsAny<UserData>()))
                 .Throws(MongoWriteException);
 
             // When

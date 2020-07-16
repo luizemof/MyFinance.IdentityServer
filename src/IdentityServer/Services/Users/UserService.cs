@@ -30,7 +30,7 @@ namespace IdentityServer.Services.Users
                 var id = ObjectId.GenerateNewId().ToString();
                 var password = IdentityServerCryptography.Encrypt(user.Password);
                 var userData = new UserData(id, user.Name, user.Email, password);
-                await UserDataAccess.CreateAsync(userData);
+                await UserDataAccess.InsertAsync(userData);
 
                 var createdUserData = (await UserDataAccess.GetAsync(id)).Single();
                 return new UserModel(createdUserData.Id, createdUserData.Name, createdUserData.Email, createdUserData.IsActive);
