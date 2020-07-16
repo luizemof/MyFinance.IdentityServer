@@ -10,5 +10,9 @@ namespace IdentityServer.Services
          Task<IEnumerable<ApiScopeModel>> GetAllScopesAsync();
          
          Task InsertApiScopeAsync(IdentityApiScope apiScope);
+
+         Task<ApiScopeModel> EnableApiScopeAsync(string id);
+
+         Task<ApiScopeModel> DisableApiScopeAsync(string id);
     }
 }

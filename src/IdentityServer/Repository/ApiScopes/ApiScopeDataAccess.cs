@@ -13,18 +13,31 @@ namespace IdentityServer.Repository.ApiScopes
             ApiScopeCollection = database.GetCollection<ApiScopeData>("ApiScope");
         }
 
-        public async Task<IEnumerable<ApiScopeData>> GetAsync()
+        public Task<IEnumerable<ApiScopeData>> GetAsync()
         {
-            var filterBuilder = new FilterDefinitionBuilder<ApiScopeData>();
-            var filter = FilterDefinition<ApiScopeData>.Empty;
-            var apiScopes=  (await ApiScopeCollection.FindAsync(filter));
-            
-            return apiScopes.ToEnumerable();;
+            var filter = FilterDefinition<ApiScopeData>.Empty;   
+            return GetAsync(filter);
+        }
+
+        public async Task<IEnumerable<ApiScopeData>> GetAsync(FilterDefinition<ApiScopeData> filter)
+        {
+            var apiScopes=  await ApiScopeCollection.FindAsync(filter);
+            return apiScopes.ToEnumerable();
         }
 
         public Task InsertAsync(ApiScopeData apiScopeData)
         {
             return ApiScopeCollection.InsertOneAsync(apiScopeData);
+        }
+
+        public async Task<bool> UpdateAsync(string id, UpdateDefinition<ApiScopeData> updateDefinition)
+        {
+            var filterDefinitionBuilder = new FilterDefinitionBuilder<ApiScopeData>();
+            var filter = filterDefinitionBuilder.Eq(data => data.Id, id);
+
+            var updateResult = await ApiScopeCollection.UpdateOneAsync(filter, updateDefinition);
+
+            return updateResult.IsAcknowledged;
         }
     }
 }

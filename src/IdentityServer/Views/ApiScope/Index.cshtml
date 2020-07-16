@@ -28,7 +28,7 @@
                     else
                     {
                         active = "Não";
-                        activeButtonDescription = "Aativar";
+                        activeButtonDescription = "Ativar";
                     }
 
                     <tr>
@@ -37,7 +37,11 @@
                         <td>@apiScope.Description</td>
                         <td>@active</td>
                         <td>
-                            <a class="btn btn-danger ml-2" style="min-width: 100px" href="#">@activeButtonDescription</a>
+                            <a class="btn btn-danger ml-2" style="min-width: 100px" 
+                                asp-action="Enabled" 
+                                asp-route-id="@apiScope.Id" 
+                                asp-route-isEnabled="@apiScope.Enabled"
+                            >@activeButtonDescription</a>
                         </td>
                     </tr>
                 }
