@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer.Models.ApiScope;
 using IdentityServer.Repository;
+using IdentityServer.Services;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 
@@ -11,10 +13,12 @@ namespace IdentityServer.Store
     public class CustomResourceStore : IResourceStore
     {
         private readonly IRepository _dbRepository;
+        private readonly IApiScopeService ApiScopeService;
 
-        public CustomResourceStore(IRepository repository)
+        public CustomResourceStore(IRepository repository, IApiScopeService apiScopeService)
         {
             _dbRepository = repository;
+            ApiScopeService = apiScopeService;
         }
 
          public Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames)
@@ -31,10 +35,14 @@ namespace IdentityServer.Store
             return Task.FromResult(apiResources.AsEnumerable());
         }
 
-        public Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
+        public async Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
         {
-            var apiScopes = _dbRepository.All<ApiScope>().Where(scope => scopeNames.Contains(scope.Name));
-            return Task.FromResult(apiScopes.AsEnumerable());
+            var apiScopeTasks = new List<Task<ApiScopeModel>>();
+            foreach(var scopeName in scopeNames)
+                apiScopeTasks.Add(ApiScopeService.GetApiScopeByName(scopeName));
+            
+            var tasksResult = await Task.WhenAll(apiScopeTasks);
+            return tasksResult;
         }
 
         public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
@@ -43,10 +51,11 @@ namespace IdentityServer.Store
             return Task.FromResult(identityResources.AsEnumerable());
         }
 
-        public Task<Resources> GetAllResourcesAsync()
+        public async Task<Resources> GetAllResourcesAsync()
         {
-            var resources = new Resources(GetAllIdentityResources(), GetAllApiResources(), GetAllApiScopes());
-            return Task.FromResult(resources);
+            var apiScopes = await GetAllApiScopes();
+            var resources = new Resources(GetAllIdentityResources(), GetAllApiResources(), apiScopes);
+            return resources;
         }
 
         private IEnumerable<ApiResource> GetAllApiResources()
@@ -59,9 +68,9 @@ namespace IdentityServer.Store
             return _dbRepository.All<IdentityResource>();
         }
 
-        private IEnumerable<ApiScope> GetAllApiScopes()
+        private Task<IEnumerable<ApiScopeModel>> GetAllApiScopes()
         {
-            return _dbRepository.All<ApiScope>();
+            return ApiScopeService.GetAllApiScopesAsync();
         }
     }
 }

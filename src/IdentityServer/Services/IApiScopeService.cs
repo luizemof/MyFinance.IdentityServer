@@ -9,6 +9,8 @@ namespace IdentityServer.Services
          Task<IEnumerable<ApiScopeModel>> GetAllApiScopesAsync();
 
          Task<ApiScopeModel> GetApiScopeById(string id);
+
+         Task<ApiScopeModel> GetApiScopeByName(string name);
          
          Task UpsertApiScopeAsync(ApiScopeInputModel apiScopeInputModel);
 
