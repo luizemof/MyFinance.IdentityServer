@@ -94,9 +94,10 @@ namespace IdentityServer
             //  --ApiResource
             if (!repository.CollectionExists<ApiScope>())
             {
+                var apiScopeService = app.ApplicationServices.GetService<Services.IApiScopeService>();
                 foreach (var api in Config.ApiScopes)
                 {
-                    repository.Add<ApiScope>(api);
+                    apiScopeService.InsertApiScopeAsync(api).GetAwaiter().GetResult();
                 }
                 createdNewRepository = true;
             }

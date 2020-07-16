@@ -1,0 +1,46 @@
+@using IdentityServer.Models.ApiScope
+@using System.Collections.Generic
+
+@model IEnumerable<ApiScopeModel>
+
+<div class="container-fluid">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Nome de exibição</th>
+                <th scope="col">Descrição</th>
+                <th scope="col">Ativo</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+
+                @foreach (var apiScope in Model)
+                {
+                    string active;
+                    string activeButtonDescription;
+                    if(apiScope.Enabled) 
+                    {
+                        active = "Sim";
+                        activeButtonDescription = "Desativar";
+                    }
+                    else
+                    {
+                        active = "Não";
+                        activeButtonDescription = "Aativar";
+                    }
+
+                    <tr>
+                        <th scope="row">@apiScope.Name</th>
+                        <td>@apiScope.DisplayName</td>
+                        <td>@apiScope.Description</td>
+                        <td>@active</td>
+                        <td>
+                            <a class="btn btn-danger ml-2" style="min-width: 100px" href="#">@activeButtonDescription</a>
+                        </td>
+                    </tr>
+                }
+        </tbody>
+    </table>
+</div>

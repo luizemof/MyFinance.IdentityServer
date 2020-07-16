@@ -22,8 +22,14 @@ namespace IdentityServer
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
             {
-                new ApiScope("IdentityServerAdmin", "Identity Server Administrator"),
-                new ApiScope("MyFinanceApi", "My Finance API"),
+                new ApiScope("IdentityServerAdmin", "Identity Server Administrator")
+                {
+                    Description = "Scope for Identity Server Administrators"
+                },
+                new ApiScope("MyFinanceApi", "My Finance API")
+                {
+                    Description = "Scope for My Finance API"
+                }
             };
 
         public static IEnumerable<Client> Clients =>

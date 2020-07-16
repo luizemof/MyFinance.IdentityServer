@@ -1,5 +1,7 @@
+using IdentityServer.Repository.ApiScopes;
 using IdentityServer.Repository.Users;
 using IdentityServer.Services;
+using IdentityServer.Services.ApiScope;
 using IdentityServer.Services.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,11 +25,13 @@ namespace IdentityServer.Extensions
         public static void ConfigureDataAccess(this IServiceCollection service)
         {
             service.AddSingleton<IUserDataAccess, UserDataAccess>();
+            service.AddSingleton<IApiScopeDataAccess, ApiScopeDataAccess>();
         }
 
         public static void ConfigureServices(this IServiceCollection services)
         {
             services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IApiScopeService, ApiScopeService>();
         }
 
         public static void ConfigureIdentityServer(this IServiceCollection services)
