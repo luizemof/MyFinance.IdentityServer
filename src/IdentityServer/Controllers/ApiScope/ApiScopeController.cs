@@ -70,7 +70,7 @@ namespace IdentityServer.Controllers.Scopes
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Error", ex.Message);
+                ModelState.AddModelError(ControllerConstants.ERROR, ex.Message);
             }
 
             return View(apiScopeInputModel);

@@ -72,7 +72,7 @@ namespace IdentityServer.Controllers.Users
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("Error", ex.Message);
+                    ModelState.AddModelError(ControllerConstants.ERROR, ex.Message);
                 }
             }
 

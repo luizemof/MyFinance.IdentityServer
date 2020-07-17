@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using IdentityServer.Constants;
+using IdentityServer.Exceptions;
 using IdentityServer.Extensions;
 using IdentityServer.Models.IdentityResource;
 using IdentityServer.Services;
@@ -24,7 +26,7 @@ namespace IdentityServer.Controllers.IdentityResource
         public async Task<IActionResult> Edit(string id)
         {
             var inputModel = new IdentityResourceInputModel();
-            if(!string.IsNullOrWhiteSpace(id))
+            if (!string.IsNullOrWhiteSpace(id))
             {
                 var model = await IdentityResourceService.GetIdentityResourceById(id);
                 inputModel = model.ToInputModel();
@@ -33,16 +35,27 @@ namespace IdentityServer.Controllers.IdentityResource
             return View(inputModel);
         }
 
-        [HttpPost]    
+        [HttpPost]
         public async Task<IActionResult> Edit(IdentityResourceInputModel input, string button)
         {
-            if(button == ControllerConstants.CANCEL)
+            if (button == ControllerConstants.CANCEL)
                 return RedirectToAction(nameof(Index));
 
-            if(ModelState.IsValid)
+            try
             {
-                await IdentityResourceService.UpsertIdentityResource(input);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await IdentityResourceService.UpsertIdentityResource(input);
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch(AlreadyExistsException ex)
+            {
+                ModelState.Merge(ex.ModelStateDictionary);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(ControllerConstants.ERROR, ex.Message);
             }
 
             return View(input);
@@ -50,7 +63,7 @@ namespace IdentityServer.Controllers.IdentityResource
 
         public async Task<IActionResult> Enabled(string id, bool isEnabled)
         {
-            if(isEnabled)
+            if (isEnabled)
                 await IdentityResourceService.Disable(id);
             else
                 await IdentityResourceService.Enable(id);

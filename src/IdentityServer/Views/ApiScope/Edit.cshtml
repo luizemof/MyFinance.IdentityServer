@@ -8,7 +8,7 @@
     <form asp-action="@ControllerConstants.EDIT">
         <input type="hidden" asp-for="Id" value="@Model.Id"/>
         
-        @if(ViewContext.ModelState.TryGetValue("Error", out ModelStateEntry modelStateEntry))
+        @if(ViewContext.ModelState.TryGetValue(ControllerConstants.ERROR, out ModelStateEntry modelStateEntry))
         {
             <div class="alert alert-danger" role="alert">
                 Ocorreu um erro na operação. Tente novamente mais tarde ou entre em contato com o administrador do sistema.

@@ -20,32 +20,24 @@ namespace IdentityServer.Services.IdentityResource
         public async Task<IEnumerable<IdentityResourceModel>> GetAllIdentityResources()
         {
             var datas = await IdentityResourceDataAccess.GetAsync();
-            return datas.Select(data => FromIdentityResourceData(data)).ToList();
+            return datas.Select(data => data.ToModel()).ToList();
         }
 
-        public Task UpsertIdentityResource(IdentityResourceInputModel model)
+        public async Task UpsertIdentityResource(IdentityResourceInputModel model)
         {
-            var data = new IdentityResourceData(model.Id, model.Name, model.DisplayName, model.Description, model.UserClaims);
-            Task operationTask;
-            if(string.IsNullOrWhiteSpace(model.Id))
-                operationTask = IdentityResourceDataAccess.InsertAsync(data);
-            else
-                operationTask = IdentityResourceDataAccess.ReplaceAsync(data, updateData=> updateData.Id == data.Id);
-            
-            return operationTask;
-        }
-
-        public IdentityResourceModel FromIdentityResourceData(IdentityResourceData data)
-        {
-            return new IdentityResourceModel()
+            try
             {
-                Id = data.Id,
-                Name = data.Name,
-                DisplayName = data.DisplayName,
-                Description = data.Description,
-                Enabled = data.Enabled,
-                UserClaims = data.UserClaims
-            };
+                var data = new IdentityResourceData(model.Id, model.Name, model.DisplayName, model.Description, model.UserClaims);
+                if (string.IsNullOrWhiteSpace(model.Id))
+                    await IdentityResourceDataAccess.InsertAsync(data);
+                else
+                    await IdentityResourceDataAccess.ReplaceAsync(data, updateData => updateData.Id == data.Id);
+            }
+            catch (MongoWriteException ex)
+            {
+                ex.ThrowIfDuplicateKey(nameof(model.Name), $"O nome '{model.Name}' já existe.");
+                throw ex;
+            }
         }
 
         public async Task<IdentityResourceModel> GetIdentityResourceById(string id)

@@ -1,11 +1,20 @@
 @using IdentityServer.Models.IdentityResource
 @using IdentityServer.Constants
+@using Microsoft.AspNetCore.Mvc.ModelBinding
 
 @model IdentityResourceInputModel
 
 <div class="container-fluid">
     <form asp-action="@ControllerConstants.EDIT">
         <input type="hidden" asp-for="Id" value="@Model.Id"/>
+
+        @if(ViewContext.ModelState.TryGetValue(ControllerConstants.ERROR, out ModelStateEntry modelStateEntry))
+        {
+            <div class="alert alert-danger" role="alert">
+                Ocorreu um erro na operação. Tente novamente mais tarde ou entre em contato com o administrador do sistema.
+            </div>
+        }
+
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label asp-for="Name">Nome</label>
