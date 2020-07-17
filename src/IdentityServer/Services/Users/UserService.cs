@@ -102,16 +102,6 @@ namespace IdentityServer.Services.Users
             return userData != null ? new UserModel(userData.Id, userData.Name, userData.Email, userData.IsActive) : UserModel.Empty;
         }
 
-        // private void ThrowIfDuplicateEmailKey(MongoWriteException ex, UserInputModel user)
-        // {
-        //     if (ex.WriteError != null && ex.WriteError.Category == ServerErrorCategory.DuplicateKey && ex.WriteError.Code == 11000)
-        //     {
-        //         var alreadyExistsException = new AlreadyExistsException();
-        //         alreadyExistsException.ModelStateDictionary.AddModelError(nameof(user.Email), $"O email '{user.Email}' já existe.");
-        //         throw alreadyExistsException;
-        //     }
-        // }
-
         private async Task<UserModel> UserActivate(string id, bool isActive)
         {
             var updateDefinitionBuilder = new UpdateDefinitionBuilder<UserData>();

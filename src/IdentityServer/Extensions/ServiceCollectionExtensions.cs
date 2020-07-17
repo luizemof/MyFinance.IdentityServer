@@ -1,8 +1,10 @@
 using IdentityServer.Repository.ApiScopes;
+using IdentityServer.Repository.Client;
 using IdentityServer.Repository.IdentityResource;
 using IdentityServer.Repository.Users;
 using IdentityServer.Services;
 using IdentityServer.Services.ApiScope;
+using IdentityServer.Services.Client;
 using IdentityServer.Services.IdentityResource;
 using IdentityServer.Services.Users;
 using Microsoft.Extensions.Configuration;
@@ -24,11 +26,12 @@ namespace IdentityServer.Extensions
             services.AddSingleton<IMongoDatabase>(mongoDatabase);
         }
 
-        public static void ConfigureDataAccess(this IServiceCollection service)
+        public static void ConfigureDataAccess(this IServiceCollection services)
         {
-            service.AddSingleton<IUserDataAccess, UserDataAccess>();
-            service.AddSingleton<IApiScopeDataAccess, ApiScopeDataAccess>();
-            service.AddSingleton<IIdentityResourceDataAccess, IdentityResourceDataAccess>();
+            services.AddSingleton<IUserDataAccess, UserDataAccess>();
+            services.AddSingleton<IApiScopeDataAccess, ApiScopeDataAccess>();
+            services.AddSingleton<IIdentityResourceDataAccess, IdentityResourceDataAccess>();
+            services.AddSingleton<IClientDataAccess, ClientDataAccess>();
         }
 
         public static void ConfigureServices(this IServiceCollection services)
@@ -36,6 +39,7 @@ namespace IdentityServer.Extensions
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IApiScopeService, ApiScopeService>();
             services.AddSingleton<IIdentityResourceService, IdentityResourceService>();
+            services.AddSingleton<IClientService, ClientService>();
         }
 
         public static void ConfigureIdentityServer(this IServiceCollection services)
@@ -45,8 +49,7 @@ namespace IdentityServer.Extensions
                 .AddMongoRepository()
                 .AddClients()
                 .AddIdentityApiResources()
-                .AddPersistedGrants()
-                .AddTestUsers(Config.GetUsers());
+                .AddPersistedGrants();
 
             
             services.AddAuthentication(options =>

@@ -73,9 +73,10 @@ namespace IdentityServer
             //  --Client
             if (!repository.CollectionExists<Client>())
             {
+                var clientService = app.ApplicationServices.GetService<Services.IClientService>();
                 foreach (var client in Config.Clients)
                 {
-                    repository.Add<Client>(client);
+                    clientService.UpsertClient(client).GetAwaiter().GetResult();
                 }
                 createdNewRepository = true;
             }
@@ -86,7 +87,7 @@ namespace IdentityServer
                 var identityResource = app.ApplicationServices.GetService<Services.IIdentityResourceService>();
                 foreach (var res in Config.IdentityResources)
                 {
-                    identityResource.UpsertIdentityResource(res);
+                    identityResource.UpsertIdentityResource(res).GetAwaiter().GetResult();
                 }
                 createdNewRepository = true;
             }

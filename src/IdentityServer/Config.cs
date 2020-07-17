@@ -3,7 +3,9 @@
 
 
 using IdentityServer.Models.ApiScope;
+using IdentityServer.Models.Client;
 using IdentityServer.Models.IdentityResource;
+using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
 using System;
@@ -34,7 +36,7 @@ namespace IdentityServer
                     Description = profile.Description,
                     UserClaims = profile.UserClaims
                 };
-            
+
                 return new IdentityResourceInputModel[]
                 {
                     openIdModel,
@@ -49,68 +51,50 @@ namespace IdentityServer
             {
                 new ApiScopeInputModel()
                 {
-                    Name = "IdentityServerAdmin",
-                    DisplayName = "Identity Server Administrator",
-                    Description = "Scope for Identity Server Administrators"
+                    Name = "IdentityServerApiSystem",
+                    DisplayName = "Identity Server Api System",
+                    Description = "Escopo para a API do Sistema IdentityServer"
                 },
                 new ApiScopeInputModel()
                 {
                     Name = "MyFinanceApi",
-                    DisplayName = "My Finance API",
-                    Description = "Scope for My Finance API"
+                    DisplayName = "Minhas Finanças API",
+                    Description = "Escopo para a API do Minha Finanças"
                 }
             };
 
-        public static IEnumerable<Client> Clients =>
-            new Client[]
+        public static IEnumerable<ClientInputModel> Clients
+        {
+            get
             {
-                new Client
+                var client1 = new ClientInputModel
                 {
                     ClientId = "client",
-
-                    // no interactive user, use the clientid/secret for authentication
+                    ClientSecret = "secret",
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-
-                    // secret for authentication
-                    ClientSecrets =
+                    AllowedScopes = new List<string>()
                     {
-                        new Secret("secret".Sha256())
-                    },
-
-                    // scopes that client has access to
-                    AllowedScopes = { "MyFinanceApi" }
-                },
-            };
-
-        public static List<TestUser> GetUsers()
-        {
-            return new List<TestUser>
-            {
-                new TestUser
-                {
-                    SubjectId = "1",
-                    Username = "alice",
-                    Password = "password",
-
-                    Claims = new List<Claim>
-                    {
-                        new Claim("name", "Alice"),
-                        new Claim("website", "https://alice.com")
+                        "MyFinanceApi"
                     }
-                },
-                new TestUser
-                {
-                    SubjectId = "2",
-                    Username = "bob",
-                    Password = "password",
+                };
 
-                    Claims = new List<Claim>
+                var client2 = new ClientInputModel
+                {
+                    ClientId = "MyFinanceIdentityServer",
+                    ClientSecret = "secret",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RedirectUrl = "https://localhost:5001/signin-oidc",
+                    PostLogoutRedirectUrl = "https://localhost:5001/signout-callback-oidc",
+                    AllowedScopes = new List<string>
                     {
-                        new Claim("name", "Bob"),
-                        new Claim("website", "https://bob.com")
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "IdentityServerApiSystem"
                     }
-                }
-            };
+                };
+
+                return new[] { client1, client2 };
+            }
         }
     }
 }
