@@ -7,6 +7,7 @@ namespace IdentityServer.Constants
         public const string USERS_CONTROLLER = "Users";
         public const string API_SCOPE_CONTROLLER = "ApiScope";
         public const string IDENTITY_RESOURCE_CONTROLLER = "IdentityResource";
+        public const string CLIENT_CONTROLLER = "Client";
 
         public const string SAVE = "Save";
         public const string CANCEL = "Cancel";

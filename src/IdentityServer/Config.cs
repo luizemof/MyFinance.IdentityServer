@@ -69,6 +69,7 @@ namespace IdentityServer
             {
                 var client1 = new ClientInputModel
                 {
+                    ClientName = "Console Aplication Client",
                     ClientId = "client",
                     ClientSecret = "secret",
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
@@ -80,6 +81,7 @@ namespace IdentityServer
 
                 var client2 = new ClientInputModel
                 {
+                    ClientName = "Identity Server Client",
                     ClientId = "MyFinanceIdentityServer",
                     ClientSecret = "secret",
                     AllowedGrantTypes = GrantTypes.Code,

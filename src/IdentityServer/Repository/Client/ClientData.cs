@@ -17,7 +17,12 @@ namespace IdentityServer.Repository.Client
         public string ClientSecret { get; set; }
 
         [BsonRequired]
+        public string ClientName { get; set; }
+
+        [BsonRequired]
         public ICollection<string> AllowedGrantTypes { get; set; }
+
+        public string Description { get; set; }
 
         public bool Enabled { get; set; } = true;
 
@@ -26,6 +31,5 @@ namespace IdentityServer.Repository.Client
         public string PostLogoutRedirectUrl { get; set; }
 
         public ICollection<string> AllowedScopes { get; set; }
-
     }
 }

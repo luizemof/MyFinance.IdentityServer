@@ -17,7 +17,9 @@ namespace IdentityServer.Extensions
                 AllowedGrantTypes = model.AllowedGrantTypes,
                 AllowedScopes = model.AllowedScopes,
                 RedirectUrl = model.RedirectUrl,
-                PostLogoutRedirectUrl = model.PostLogoutRedirectUrl
+                PostLogoutRedirectUrl = model.PostLogoutRedirectUrl,
+                ClientName = model.ClientName,
+                Description = model.Description
             };
 
             return data;
@@ -34,7 +36,9 @@ namespace IdentityServer.Extensions
                 AllowedScopes = data.AllowedScopes,
                 PostLogoutRedirectUris = { data.PostLogoutRedirectUrl },
                 RedirectUris = { data.RedirectUrl },
-                Enabled = data.Enabled
+                Enabled = data.Enabled,
+                Description = data.Description,
+                ClientName = data.ClientName
             };
         }
     }

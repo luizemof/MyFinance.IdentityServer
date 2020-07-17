@@ -14,7 +14,12 @@ namespace IdentityServer.Models.Client
         public string ClientSecret { get; set; }
 
         [Required]
+        public string ClientName { get; set; }
+
+        [Required]
         public ICollection<string> AllowedGrantTypes { get; set; }
+
+        public string Description { get; set; }
 
         public string RedirectUrl { get; set; }
 

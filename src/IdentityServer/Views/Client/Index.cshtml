@@ -1,0 +1,89 @@
+@using IdentityServer.Models.Client
+@using System.Collections.Generic
+@using System.Linq
+@using IdentityServer.Constants
+@using System;
+
+@model IEnumerable<ClientModel>
+
+@{
+    Func<IEnumerable<string>, string> toolTip = values => values.Count() > 0 ? string.Join(" <br> ", values) : string.Empty;
+    Func<IEnumerable<string>, string> join = values => values.Count() > 0 ? string.Join(" | ", values) : string.Empty;
+    string spanBreakUp = "display: block;max-width: 300px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;";
+}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col d-flex justify-content-end">
+            <a class="btn btn-primary mb-2" asp-action="Edit">Novo Cliente</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id do Cliente</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">Descrição</th>
+                            <th scope="col">Ativo</th>
+                            <th scope="col">Concessão</th>
+                            <th scope="col">Escopos Permitidos</th>
+                            <th scope="col">URL de Redirecionamento</th>
+                            <th scope="col">URL de Logout</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            @foreach (var client in Model)
+                            {
+                                string active;
+                                string activeButtonDescription;
+                                
+                                string disabled = string.Empty;
+                                string activeButtonClass = string.Empty;
+
+                                if(client.Enabled) 
+                                {
+                                    active = "Sim";
+                                    activeButtonDescription = "Desativar";
+                                    activeButtonClass = "btn btn-danger";
+                                }
+                                else
+                                {
+                                    active = "Não";
+                                    activeButtonDescription = "Ativar";
+                                    disabled = "disabled";
+                                    activeButtonClass = "btn btn-success";
+                                }
+
+                                <tr>
+                                    <th scope="row">@client.ClientId</th>
+                                    <td>@client.ClientName</td>
+                                    <td>@client.Description</td>
+                                    <td>@active</td>
+                                    <td class="text-break" data-placement="right" data-toggle="tooltip" data-html="true" title="@toolTip(client.AllowedGrantTypes)">
+                                        <span style="@spanBreakUp">@join(client.AllowedGrantTypes)</span>
+                                    </td>
+                                    <td class="text-break" data-placement="right" data-toggle="tooltip" data-html="true" title="@toolTip(client.AllowedScopes)">
+                                        <span style="@spanBreakUp">@join(client.AllowedScopes)</span>
+                                    </td>
+                                    <td>@join(client.RedirectUris) </td>
+                                    <td>@join(client.PostLogoutRedirectUris) </td>
+                                    <td class="d-flex justify-content-end">
+                                        <a class="btn btn-secondary @disabled" asp-action="@ControllerConstants.EDIT" asp-route-id="@client.Id">Editar</a>
+                                        <a class="@activeButtonClass ml-2" style="min-width: 100px" 
+                                            asp-action="Enabled" 
+                                            asp-route-id="@client.Id" 
+                                            asp-route-isEnabled="@client.Enabled"
+                                        >@activeButtonDescription</a>
+                                    </td>
+                                </tr>
+                            }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
