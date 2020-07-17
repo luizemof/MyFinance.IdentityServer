@@ -10,6 +10,8 @@ namespace IdentityServer.Services
          
          Task<IdentityResourceModel> GetIdentityResourceById(string id);
          
+         Task<IdentityResourceModel> GetIdentityResourceByName(string scopeName);
+         
          Task UpsertIdentityResource(IdentityResourceInputModel identityResourceInputModel);
 
          Task<IdentityResourceModel> Enable(string id);

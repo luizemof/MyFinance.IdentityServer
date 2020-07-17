@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using IdentityServer.Exceptions;
 using IdentityServer.Extensions;
 using IdentityServer.Models.IdentityResource;
 using IdentityServer.Repository.IdentityResource;
@@ -40,10 +43,14 @@ namespace IdentityServer.Services.IdentityResource
             }
         }
 
-        public async Task<IdentityResourceModel> GetIdentityResourceById(string id)
+        public Task<IdentityResourceModel> GetIdentityResourceById(string id)
         {
-            var data = await IdentityResourceDataAccess.GetByField(data => data.Id, id);
-            return data.ToModel();
+            return GetIdentityResourceByField(data => data.Id, id);
+        }
+
+        public Task<IdentityResourceModel> GetIdentityResourceByName(string name)
+        {
+            return GetIdentityResourceByField(data => data.Name, name);
         }
 
         public Task<IdentityResourceModel> Enable(string id)
@@ -63,6 +70,12 @@ namespace IdentityServer.Services.IdentityResource
             var updated = await IdentityResourceDataAccess.UpdateAsync(data => data.Id, id, updateDefinition);
 
             return updated ? await GetIdentityResourceById(id) : default(IdentityResourceModel);
+        }
+
+        private async Task<IdentityResourceModel> GetIdentityResourceByField<T>(Expression<Func<IdentityResourceData, T>> expression, T value)
+        {
+            var data = await IdentityResourceDataAccess.GetByField(expression, value);
+            return data?.ToModel() ?? throw new NotFoundException();
         }
     }
 }
