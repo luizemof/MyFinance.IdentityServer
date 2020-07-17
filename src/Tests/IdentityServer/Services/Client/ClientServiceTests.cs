@@ -31,7 +31,7 @@ namespace IdentityServer.Tests.Services.Client
                 .Returns(Task.CompletedTask);
 
             // When
-            ClientService.UpsertClient(input).GetAwaiter().GetResult();
+            ClientService.UpsertClientAsync(input).GetAwaiter().GetResult();
 
             // Then
             ClientDataAccessMock.Verify(dataAccess => dataAccess.InsertAsync(It.IsAny<ClientData>()), Times.Once);

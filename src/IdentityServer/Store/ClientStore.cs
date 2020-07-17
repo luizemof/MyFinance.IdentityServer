@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using IdentityServer.Repository;
+using IdentityServer.Services;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 
@@ -7,17 +7,17 @@ namespace IdentityServer.Store
 {
     public sealed class CustomClientStore : IClientStore
     {
-        private readonly IRepository Repository;
+        private readonly IClientService ClientService;
 
-        public CustomClientStore(IRepository repository)
+        public CustomClientStore(IClientService clientService)
         {
-            Repository = repository;
+            ClientService = clientService;
         }
 
-        public Task<Client> FindClientByIdAsync(string clientId)
+        public async Task<Client> FindClientByIdAsync(string clientId)
         {
-            var client = Repository.Single<Client>(client => client.ClientId == clientId);
-            return Task.FromResult(client);
+            var client = await ClientService.GetClientByClientIdAsync(clientId);
+            return client;
         }
     }
 }

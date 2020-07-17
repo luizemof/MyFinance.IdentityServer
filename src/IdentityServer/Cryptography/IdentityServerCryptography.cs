@@ -40,7 +40,7 @@ namespace IdentityServer.Cryptography
             return Convert.ToBase64String(array);
         }
 
-        public string Dencrypt(string cipherText)
+        public string Decrypt(string cipherText)
         {
             byte[] iv = new byte[16];  
             byte[] buffer = Convert.FromBase64String(cipherText);  

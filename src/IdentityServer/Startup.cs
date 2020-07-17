@@ -76,7 +76,7 @@ namespace IdentityServer
                 var clientService = app.ApplicationServices.GetService<Services.IClientService>();
                 foreach (var client in Config.Clients)
                 {
-                    clientService.UpsertClient(client).GetAwaiter().GetResult();
+                    clientService.UpsertClientAsync(client).GetAwaiter().GetResult();
                 }
                 createdNewRepository = true;
             }

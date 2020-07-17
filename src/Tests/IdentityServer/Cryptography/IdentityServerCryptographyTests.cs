@@ -22,7 +22,7 @@ namespace IdentityServer.Tests.Cryptography
         public void WhenItCallDencrypt_TheShouldReturnTheValueEncrypted()
         {
             // When
-            var dencryptedValue = TestIdentityServerCryptography.Dencrypt("c49nHayoXPOsZRI1NPkAIA==");
+            var dencryptedValue = TestIdentityServerCryptography.Decrypt("c49nHayoXPOsZRI1NPkAIA==");
 
             // Then
             Assert.AreEqual(expected: "123", dencryptedValue);
