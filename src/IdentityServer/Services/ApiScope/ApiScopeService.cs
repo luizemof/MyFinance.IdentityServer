@@ -12,7 +12,7 @@ namespace IdentityServer.Services.ApiScope
     public class ApiScopeService : IApiScopeService
     {
         private readonly IApiScopeDataAccess ApiScopeDataAccess;
-        
+
         public ApiScopeService(IApiScopeDataAccess apiScopesDataAccess)
         {
             ApiScopeDataAccess = apiScopesDataAccess;
@@ -34,28 +34,31 @@ namespace IdentityServer.Services.ApiScope
             return apiScopesData.Select(data => FromApiScopeData(data)).ToList();
         }
 
-        public async Task<ApiScopeModel> GetApiScopeById(string id)
+        public Task<ApiScopeModel> GetApiScopeById(string id)
         {
-            var data = await ApiScopeDataAccess.GetByField(data => data.Id, id);
-            return FromApiScopeData(data);
+            return GetApiScopeByField(data => data.Id, id);
         }
 
-        public async Task<ApiScopeModel> GetApiScopeByName(string name)
+        public Task<ApiScopeModel> GetApiScopeByName(string name)
         {
-            var data = await ApiScopeDataAccess.GetByField(data => data.Name, name);
-            return FromApiScopeData(data);
+            return GetApiScopeByField(data => data.Name, name);
         }
 
-        public Task UpsertApiScopeAsync(ApiScopeInputModel apiScopeInputModel)
+        public async Task UpsertApiScopeAsync(ApiScopeInputModel apiScopeInputModel)
         {
-            var apiScopeData = new ApiScopeData(apiScopeInputModel.Id, apiScopeInputModel.Name, apiScopeInputModel.DisplayName, apiScopeInputModel.Description);
-            Task upsertTask;
-            if(string.IsNullOrEmpty(apiScopeData.Id))
-                upsertTask= ApiScopeDataAccess.InsertAsync(apiScopeData);
-            else
-                upsertTask = ApiScopeDataAccess.ReplaceAsync(apiScopeData, data => data.Id == apiScopeData.Id);
-
-            return upsertTask;
+            try
+            {
+                var apiScopeData = new ApiScopeData(apiScopeInputModel.Id, apiScopeInputModel.Name, apiScopeInputModel.DisplayName, apiScopeInputModel.Description);
+                if (string.IsNullOrEmpty(apiScopeData.Id))
+                    await ApiScopeDataAccess.InsertAsync(apiScopeData);
+                else
+                    await ApiScopeDataAccess.ReplaceAsync(apiScopeData, data => data.Id == apiScopeData.Id);
+            }
+            catch (MongoWriteException ex)
+            {
+                ex.ThrowIfDuplicateKey(nameof(apiScopeInputModel.Name), $"O nome '{apiScopeInputModel.Name} já existe.");
+                throw ex;
+            }
         }
 
         private ApiScopeModel FromApiScopeData(ApiScopeData data)
@@ -70,6 +73,12 @@ namespace IdentityServer.Services.ApiScope
             var updated = await ApiScopeDataAccess.UpdateAsync(data => data.Id, id, updateDefinition);
 
             return updated ? await GetApiScopeById(id) : default(ApiScopeModel);
+        }
+
+        private async Task<ApiScopeModel> GetApiScopeByField<T>(Expression<Func<ApiScopeData, T>> expression, T value)
+        {
+            var data = await ApiScopeDataAccess.GetByField(expression, value);
+            return data != null ? FromApiScopeData(data) : default(ApiScopeModel);
         }
     }
 }

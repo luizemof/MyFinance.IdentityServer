@@ -1,12 +1,19 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
+using IdentityServer.Exceptions;
 using IdentityServer.Models.ApiScope;
 using IdentityServer.Repository.ApiScopes;
 using IdentityServer.Services;
 using IdentityServer.Services.ApiScope;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Clusters;
+using MongoDB.Driver.Core.Connections;
+using MongoDB.Driver.Core.Servers;
 using Moq;
 using NUnit.Framework;
 using IdentityApiScope = IdentityServer4.Models.ApiScope;
@@ -18,14 +25,22 @@ namespace IdentityServer.Tests.Services.ApiScope
     {
         private IApiScopeService ApiScopeService;
         private Mock<IApiScopeDataAccess> ApiScopeDataAccessMock;
+        private MongoWriteException MongoWriteException;
 
-        private Expression<Func<ApiScopeData, bool>> ExpressionItsAny = It.IsAny<Expression<Func<ApiScopeData, bool>>>();
+        private Expression<Func<ApiScopeData, bool>> ExpressionItsAny;
 
         [SetUp]
         public void Setup()
         {
             ApiScopeDataAccessMock = new Mock<IApiScopeDataAccess>();
             ApiScopeService = new ApiScopeService(ApiScopeDataAccessMock.Object);
+            ExpressionItsAny = It.IsAny<Expression<Func<ApiScopeData, bool>>>();
+
+            var connectionId = new ConnectionId(new ServerId(new ClusterId(1), new DnsEndPoint("localhost", 27017)), 2);
+            var writeConcernErrorConstructor = typeof(WriteError).GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic)[0];
+            var writeError = (WriteError)writeConcernErrorConstructor.Invoke(new object[] { ServerErrorCategory.DuplicateKey, 11000, "writeError", new BsonDocument("details", "writeError") });
+
+            MongoWriteException = new MongoWriteException(connectionId, writeError, null, null);
         }
 
         [Test]
@@ -86,14 +101,14 @@ namespace IdentityServer.Tests.Services.ApiScope
             };
 
             ApiScopeDataAccessMock
-                .Setup(apiScopeDataAccess => apiScopeDataAccess.ReplaceAsync(It.IsAny<ApiScopeData>(), ExpressionItsAny))
+                .Setup(apiScopeDataAccess => apiScopeDataAccess.ReplaceAsync(It.IsAny<ApiScopeData>(), It.IsAny<Expression<Func<ApiScopeData, bool>>>()))
                 .ReturnsAsync(true);
 
             // When
             ApiScopeService.UpsertApiScopeAsync(apiScopeInputModel).GetAwaiter().GetResult();
 
             // Then
-            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ApiScopeData>(), ExpressionItsAny), Times.Once);
+            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ApiScopeData>(), It.IsAny<Expression<Func<ApiScopeData, bool>>>()), Times.Once);
             ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.InsertAsync(It.IsAny<ApiScopeData>()), Times.Never);
         }
 
@@ -105,8 +120,8 @@ namespace IdentityServer.Tests.Services.ApiScope
             var apiScopeData = new ApiScopeData(id, name: "ApiScope", displayName: "Api Scope", description: "Api Scope Description", enabled: true);
 
             ApiScopeDataAccessMock
-                .Setup(dataAccess => dataAccess.GetAsync(It.IsAny<FilterDefinition<ApiScopeData>>()))
-                .ReturnsAsync(new[] { apiScopeData }.AsEnumerable());
+                .Setup(dataAccess => dataAccess.GetByField(It.IsAny<Expression<Func<ApiScopeData, string>>>(), It.IsAny<string>()))
+                .ReturnsAsync(apiScopeData);
 
             ApiScopeDataAccessMock
                 .Setup(dataAccess => dataAccess.UpdateAsync(It.IsAny<Expression<Func<ApiScopeData, string>>>(), It.IsAny<string>(), It.IsAny<UpdateDefinition<ApiScopeData>>()))
@@ -116,9 +131,46 @@ namespace IdentityServer.Tests.Services.ApiScope
             var apiScope = ApiScopeService.EnableApiScopeAsync(id).GetAwaiter().GetResult();
 
             // Then
-            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.GetAsync(It.IsAny<FilterDefinition<ApiScopeData>>()), Times.Once);
+            ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.GetByField(It.IsAny<Expression<Func<ApiScopeData, string>>>(), It.IsAny<string>()), Times.Once);
             ApiScopeDataAccessMock.Verify(dataAccess => dataAccess.UpdateAsync(It.IsAny<Expression<Func<ApiScopeData, string>>>(), It.IsAny<string>(), It.IsAny<UpdateDefinition<ApiScopeData>>()), Times.Once);
             Assert.IsTrue(CheckApiScopeAndApiScopeData(apiScopeData, apiScope));
+        }
+
+        [TestCase]
+        public void GivenItHasAnEmail_WhenICallUpdateUser_AndTheEmailAlreadyExists_ThenShouldThrowAlreadyExistsException()
+        {
+            // Given
+            var apiScopeInputModel = new ApiScopeInputModel()
+            {
+                Id = "1",
+                Name = "Name",
+                DisplayName = "DisplayName"
+            };
+
+            ApiScopeDataAccessMock
+                .Setup(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ApiScopeData>(), It.IsAny<Expression<Func<ApiScopeData, bool>>>()))
+                .Throws(MongoWriteException);
+
+            // When
+            Assert.Throws(typeof(AlreadyExistsException), () => ApiScopeService.UpsertApiScopeAsync(apiScopeInputModel).GetAwaiter().GetResult());
+        }
+
+        [TestCase]
+        public void GivenItHasAnEmail_WhenICallInserUser_AndTheEmailAlreadyExists_ThenShouldThrowAlreadyExistsException()
+        {
+            // Given
+            var apiScopeInputModel = new ApiScopeInputModel()
+            {
+                Name = "Name",
+                DisplayName = "DisplayName"
+            };
+
+            ApiScopeDataAccessMock
+                .Setup(dataAccess => dataAccess.InsertAsync(It.IsAny<ApiScopeData>()))
+                .Throws(MongoWriteException);
+
+            // When
+            Assert.Throws(typeof(AlreadyExistsException), () => ApiScopeService.UpsertApiScopeAsync(apiScopeInputModel).GetAwaiter().GetResult());
         }
 
         private bool CheckApiScopeAndApiScopeData(ApiScopeData data, IdentityApiScope apiScope)

@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using IdentityServer.Constants;
+using IdentityServer.Exceptions;
 using IdentityServer.Models.ApiScope;
 using IdentityServer.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -51,13 +53,24 @@ namespace IdentityServer.Controllers.Scopes
         [HttpPost]
         public async Task<IActionResult> Edit(ApiScopeInputModel apiScopeInputModel, string button)
         {
-            if(button == ControllerConstants.CANCEL)
+            if (button == ControllerConstants.CANCEL)
                 return RedirectToAction(nameof(Index));
 
-            if(ModelState.IsValid)
+            try
             {
-                await ApiScopeService.UpsertApiScopeAsync(apiScopeInputModel);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await ApiScopeService.UpsertApiScopeAsync(apiScopeInputModel);
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (AlreadyExistsException ex)
+            {
+                ModelState.Merge(ex.ModelStateDictionary);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("Error", ex.Message);
             }
 
             return View(apiScopeInputModel);

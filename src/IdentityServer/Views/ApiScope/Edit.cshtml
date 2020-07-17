@@ -1,11 +1,20 @@
 @using IdentityServer.Constants
 @using IdentityServer.Models.ApiScope
+@using Microsoft.AspNetCore.Mvc.ModelBinding
 
 @model ApiScopeInputModel
 
 <div class="container-fluid">
     <form asp-action="@ControllerConstants.EDIT">
         <input type="hidden" asp-for="Id" value="@Model.Id"/>
+        
+        @if(ViewContext.ModelState.TryGetValue("Error", out ModelStateEntry modelStateEntry))
+        {
+            <div class="alert alert-danger" role="alert">
+                Ocorreu um erro na operação. Tente novamente mais tarde ou entre em contato com o administrador do sistema.
+            </div>
+        }
+
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label asp-for="Name">Nome</label>
@@ -26,8 +35,8 @@
         </div>
 
         <div class="mt-3">
-            <button class="btn btn-primary" name="@ControllerConstants.SAVE">Salvar</button>
-            <button class="btn btn-secondary" name="@ControllerConstants.CANCEL">Cancelar</button>
+            <button class="btn btn-primary" name="button" value="@ControllerConstants.SAVE">Salvar</button>
+            <button class="btn btn-secondary" name="button" value="@ControllerConstants.CANCEL">Cancelar</button>
         </div>
     </form>
 </div>

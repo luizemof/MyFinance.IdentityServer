@@ -37,7 +37,7 @@ namespace IdentityServer.Services.Users
             }
             catch (MongoWriteException ex)
             {
-                ThrowIfDuplicateEmailKey(ex, user);
+                ex.ThrowIfDuplicateKey(nameof(user.Email), $"O email '{user.Email}' já existe.");;
                 throw new Exception("An error occours when create a user.");
             }
         }
@@ -80,7 +80,8 @@ namespace IdentityServer.Services.Users
             }
             catch (MongoWriteException ex)
             {
-                ThrowIfDuplicateEmailKey(ex, userInputModel);
+                ex.ThrowIfDuplicateKey(nameof(userInputModel.Email), $"O email '{userInputModel.Email}' já existe.");
+
                 throw new Exception("An error occours when update a user.");
             }
         }
@@ -101,15 +102,15 @@ namespace IdentityServer.Services.Users
             return userData != null ? new UserModel(userData.Id, userData.Name, userData.Email, userData.IsActive) : UserModel.Empty;
         }
 
-        private void ThrowIfDuplicateEmailKey(MongoWriteException ex, UserInputModel user)
-        {
-            if (ex.WriteError != null && ex.WriteError.Category == ServerErrorCategory.DuplicateKey && ex.WriteError.Code == 11000)
-            {
-                var alreadyExistsException = new AlreadyExistsException();
-                alreadyExistsException.ModelStateDictionary.AddModelError(nameof(user.Email), $"O email '{user.Email}' já existe.");
-                throw alreadyExistsException;
-            }
-        }
+        // private void ThrowIfDuplicateEmailKey(MongoWriteException ex, UserInputModel user)
+        // {
+        //     if (ex.WriteError != null && ex.WriteError.Category == ServerErrorCategory.DuplicateKey && ex.WriteError.Code == 11000)
+        //     {
+        //         var alreadyExistsException = new AlreadyExistsException();
+        //         alreadyExistsException.ModelStateDictionary.AddModelError(nameof(user.Email), $"O email '{user.Email}' já existe.");
+        //         throw alreadyExistsException;
+        //     }
+        // }
 
         private async Task<UserModel> UserActivate(string id, bool isActive)
         {
