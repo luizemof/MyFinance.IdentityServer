@@ -73,6 +73,10 @@ namespace IdentityServer.Controllers.Client
             {
                 ModelState.Merge(ex.ModelStateDictionary);
             }
+            catch(ValidationException ex)
+            {
+                ModelState.Merge(ex.ModelStateDictionary);
+            }
             catch(Exception ex)
             {
                 ModelState.AddModelError("Error", ex.Message);

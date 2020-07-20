@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
@@ -42,7 +43,12 @@ namespace IdentityServer.Tests.Services.Client
         public void GivenItHasntAClient_WhenICallUpsertClient_ThenShouldCallInsert()
         {
             // Given
-            var input = new ClientInputModel();
+            var input = new ClientInputModel()
+            {
+                ClientId = "ClientId",
+                ClientName = "Name",
+                AllowedGrantTypes = new List<string>() { "Grant" }
+            };
             ClientDataAccessMock
                 .Setup(dataAccess => dataAccess.InsertAsync(It.IsAny<ClientData>()))
                 .Returns(Task.CompletedTask);
@@ -59,17 +65,23 @@ namespace IdentityServer.Tests.Services.Client
         public void GivenIHasAClientId_WhenCallUpsertToInsertNewClient_ThenShouldThrowAlreadyExistsException()
         {
             // Given
+            var clientInput = new ClientInputModel()
+            {
+                ClientId = "ClientId",
+                ClientName = "Name",
+                AllowedGrantTypes = new List<string>() { "ABC" }
+            };
             ClientDataAccessMock.Setup(dataAccess => dataAccess.InsertAsync(It.IsAny<ClientData>())).Throws(MongoWriteException);
 
             // When
-            Assert.Throws(typeof(AlreadyExistsException), () => ClientService.UpsertClientAsync(new ClientInputModel()).GetAwaiter().GetResult());
+            Assert.Throws(typeof(AlreadyExistsException), () => ClientService.UpsertClientAsync(clientInput).GetAwaiter().GetResult());
         }
 
         [Test]
         public void GivenItHasClient_WhenCallUpsertToUpdateClient_ThenShouldCallReplace()
         {
             // Given
-            var input = new ClientInputModel(){ Id = "1˝"};
+            var input = new ClientInputModel() { Id = "1", ClientId = "ClientId", ClientName = "Name", AllowedGrantTypes = new List<string>() { "ABC" } };
             ClientDataAccessMock
                 .Setup(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ClientData>(), It.IsAny<Expression<Func<ClientData, bool>>>()))
                 .ReturnsAsync(true);

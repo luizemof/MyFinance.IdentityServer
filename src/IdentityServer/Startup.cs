@@ -54,8 +54,6 @@ namespace IdentityServer
 
             ConfigureMongoDriver2IgnoreExtraElements();
 
-            InitializeDatabase(app);
-
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
@@ -63,53 +61,6 @@ namespace IdentityServer
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-        }
-
-        private static void InitializeDatabase(IApplicationBuilder app)
-        {
-            bool createdNewRepository = false;
-            var repository = app.ApplicationServices.GetService<IRepository>();
-
-            //  --Client
-            if (!repository.CollectionExists<Client>())
-            {
-                var clientService = app.ApplicationServices.GetService<Services.IClientService>();
-                foreach (var client in Config.Clients)
-                {
-                    clientService.UpsertClientAsync(client).GetAwaiter().GetResult();
-                }
-                createdNewRepository = true;
-            }
-
-            //  --IdentityResource
-            if (!repository.CollectionExists<IdentityResource>())
-            {
-                var identityResource = app.ApplicationServices.GetService<Services.IIdentityResourceService>();
-                foreach (var res in Config.IdentityResources)
-                {
-                    identityResource.UpsertIdentityResource(res).GetAwaiter().GetResult();
-                }
-                createdNewRepository = true;
-            }
-
-
-            //  --ApiResource
-            if (!repository.CollectionExists<ApiScope>())
-            {
-                var apiScopeService = app.ApplicationServices.GetService<Services.IApiScopeService>();
-                foreach (var api in Config.ApiScopes)
-                {
-                    apiScopeService.UpsertApiScopeAsync(api).GetAwaiter().GetResult();
-                }
-                createdNewRepository = true;
-            }
-
-            // If it's a new Repository (database), need to restart the website to configure Mongo to ignore Extra Elements.
-            if (createdNewRepository)
-            {
-                var newRepositoryMsg = $"Mongo Repository created/populated! Please restart you website, so Mongo driver will be configured  to ignore Extra Elements - e.g. IdentityServer \"_id\" ";
-                throw new Exception(newRepositoryMsg);
-            }
         }
 
         /// <summary>

@@ -43,6 +43,7 @@ namespace IdentityServer.Services.Client
         {
             try
             {
+                ClientValidations.Validate(inputModel);
                 var clientData = inputModel.ToData(Cryptography);
                 if (string.IsNullOrWhiteSpace(clientData.Id))
                     await ClientDataAccess.InsertAsync(clientData);

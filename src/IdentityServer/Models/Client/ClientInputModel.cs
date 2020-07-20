@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using IdentityServer.Services.Client;
 
 namespace IdentityServer.Models.Client
 {
@@ -7,18 +8,18 @@ namespace IdentityServer.Models.Client
     {
         public string Id { get; set; }
 
-        [Required(ErrorMessage = "O id do client é obrigatório.")]
+        [Required(ErrorMessage = ClientValidations.CLIENT_ID_VALIDATION_MESSAGE)]
         public string ClientId { get; set; }
 
-        [Required(ErrorMessage = "A chave do cliente é obrigatória.")]
-        public string ClientSecret { get; set; }
-
-        [Required(ErrorMessage = "O nome do cliente é obrigatório.")]
+        [Required(ErrorMessage = ClientValidations.CLIENT_NAME_VALIDATION_MESSAGE)]
         public string ClientName { get; set; }
-
+        
+        [Required(ErrorMessage = ClientValidations.ALLOWED_GRANT_TYPES_VALIDATION_MESSAGE)]
         public List<string> AllowedGrantTypes { get; set; } = new List<string>();
         
         public List<string> AllowedScopes { get; set; } = new List<string>();
+
+        public string ClientSecret { get; set; }
 
         public string Description { get; set; }
 

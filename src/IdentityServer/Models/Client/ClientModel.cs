@@ -17,13 +17,22 @@ namespace IdentityServer.Models.Client
         public string Id { get; }
 
         private string _DecryptedSecret;
-        public string DecryptedSecret 
-        { 
-            get { return _DecryptedSecret; } 
-            private set 
-            { 
+        public string DecryptedSecret
+        {
+            get { return _DecryptedSecret; }
+            private set
+            {
                 _DecryptedSecret = value;
-                this.ClientSecrets = new List<Secret>() { new Secret(_DecryptedSecret.Sha256()) };
+                if (!string.IsNullOrWhiteSpace(_DecryptedSecret))
+                {
+                    this.ClientSecrets = new List<Secret>() { new Secret(_DecryptedSecret.Sha256()) };
+                    this.RequireClientSecret = true;
+                }
+                else
+                {
+                    this.ClientSecrets = null;
+                    this.RequireClientSecret = false;
+                }
             }
         }
     }

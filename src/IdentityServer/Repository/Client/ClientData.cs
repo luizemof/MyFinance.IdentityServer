@@ -14,14 +14,13 @@ namespace IdentityServer.Repository.Client
         public string ClientId { get; set; }
 
         [BsonRequired]
-        public string ClientSecret { get; set; }
-
-        [BsonRequired]
         public string ClientName { get; set; }
 
         [BsonRequired]
         public ICollection<string> AllowedGrantTypes { get; set; }
 
+        public string ClientSecret { get; set; }
+        
         public string Description { get; set; }
 
         public bool Enabled { get; set; } = true;

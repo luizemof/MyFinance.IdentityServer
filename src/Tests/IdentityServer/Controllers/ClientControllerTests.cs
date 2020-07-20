@@ -426,6 +426,27 @@ namespace IdentityServer.Tests.Controllers
             Assert.AreEqual(clientInputModel, actionResultModel);
         }
 
+        [Test]
+        public void WhenCallEdit_AndTheCommandIsSave_AndThrowValidationException_TheShouldReturnEditViewWithModelStateInvalid()
+        {
+            // Arrange
+            var clientInputModel = CreateClientModel("1", "secret").ToInputModel();
+            var someKey = "someKey";
+            var validationException = new ValidationException();
+            validationException.AddValidation(() => true, someKey, "someMessage");
+            ClientServiceMock.Setup(service => service.UpsertClientAsync(It.IsAny<ClientInputModel>())).Throws(validationException);
+
+            // Act
+            var actionResult = ClientController.Edit(clientInputModel, ControllerConstants.SAVE, string.Empty).GetAwaiter().GetResult() as ViewResult;
+            var actionResultModel = actionResult?.Model as ClientInputModel;
+
+            // Assert
+            Assert.IsFalse(ClientController.ModelState.IsValid);
+            Assert.IsTrue(ClientController.ModelState.ContainsKey(someKey));
+            Assert.IsNotNull(actionResult);
+            Assert.AreEqual(clientInputModel, actionResultModel);
+        }
+
         private bool CheckClientInputModel(ClientInputModel inputModel)
         {
             var properties = inputModel.GetType().GetProperties().Select(property => property.GetValue(inputModel));
