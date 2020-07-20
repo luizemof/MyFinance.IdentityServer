@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using IdentityServer.Cryptography;
 using IdentityServer.Extensions;
@@ -26,15 +28,25 @@ namespace IdentityServer.Services.Client
             return datas.Select(data => data.ToModel(Cryptography));
         }
 
-        public async Task<ClientModel> GetClientByClientIdAsync(string clientId)
+        public Task<ClientModel> GetClientByClientIdAsync(string clientId)
         {
-            var data = await ClientDataAccess.GetByField(data => data.ClientId, clientId);
-            return data.ToModel(Cryptography);
+            return GetClientByFieldAsync(data => data.ClientId, clientId);
+        }
+
+        public Task<ClientModel> GetClientByInternalIdAsync(string id)
+        {
+            return GetClientByFieldAsync(data => data.Id, id);
         }
 
         public Task UpsertClientAsync(ClientInputModel inputModel)
         {
             return ClientDataAccess.InsertAsync(inputModel.ToData(Cryptography));
+        }
+
+        private async Task<ClientModel> GetClientByFieldAsync<T>(Expression<Func<ClientData, T>> expression, T value)
+        {
+            var data = await ClientDataAccess.GetByField(expression, value);
+            return data.ToModel(Cryptography);
         }
     }
 }

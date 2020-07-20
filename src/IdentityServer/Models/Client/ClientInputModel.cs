@@ -17,7 +17,7 @@ namespace IdentityServer.Models.Client
         public string ClientName { get; set; }
 
         [Required]
-        public ICollection<string> AllowedGrantTypes { get; set; }
+        public List<string> AllowedGrantTypes { get; set; } = new List<string>();
 
         public string Description { get; set; }
 
@@ -25,6 +25,6 @@ namespace IdentityServer.Models.Client
 
         public string PostLogoutRedirectUrl { get; set; }
 
-        public ICollection<string> AllowedScopes { get; set; }
+        public List<string> AllowedScopes { get; set; } = new List<string>();
     }
 }

@@ -7,10 +7,8 @@ using IdentityServer.Models.Client;
 using IdentityServer.Models.IdentityResource;
 using IdentityServer4;
 using IdentityServer4.Models;
-using IdentityServer4.Test;
-using System;
 using System.Collections.Generic;
-using System.Security.Claims;
+using System.Linq;
 
 namespace IdentityServer
 {
@@ -72,11 +70,8 @@ namespace IdentityServer
                     ClientName = "Console Aplication Client",
                     ClientId = "client",
                     ClientSecret = "secret",
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = new List<string>()
-                    {
-                        "MyFinanceApi"
-                    }
+                    AllowedGrantTypes = GrantTypes.ClientCredentials.ToList(),
+                    AllowedScopes = new List<string>() { "MyFinanceApi" }
                 };
 
                 var client2 = new ClientInputModel
@@ -84,7 +79,7 @@ namespace IdentityServer
                     ClientName = "Identity Server Client",
                     ClientId = "MyFinanceIdentityServer",
                     ClientSecret = "secret",
-                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowedGrantTypes = GrantTypes.Code.ToList(),
                     RedirectUrl = "https://localhost:5001/signin-oidc",
                     PostLogoutRedirectUrl = "https://localhost:5001/signout-callback-oidc",
                     AllowedScopes = new List<string>

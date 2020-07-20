@@ -11,5 +11,6 @@ namespace IdentityServer.Services
         Task<IEnumerable<ClientModel>> GetAllClientsAsync();
 
         Task<ClientModel> GetClientByClientIdAsync(string clientId);
+        Task<ClientModel> GetClientByInternalIdAsync(string id);
     }
 }
