@@ -1,5 +1,6 @@
 @using IdentityServer.Models.Client
 @using IdentityServer.Constants
+@using IdentityServer.Controllers.Client
 @using Microsoft.AspNetCore.Mvc.ModelBinding
 @using System.Linq
 
@@ -10,13 +11,13 @@
     {
         var buttonClass = isAdd ? "badge-success" : "badge-danger";
         var buttonContent = isAdd ? "+" : "x";
-        var buttonValue = isAdd ? "add" : "remove";
+        var buttonOperation = isAdd ? ClientController.ADD : ClientController.REMOVE;
         
         return new 
         {
             buttonClass,
             buttonContent,
-            buttonValue
+            buttonOperation
         };
     }
 }
@@ -82,7 +83,7 @@
                                             @elem
                                             <button name="button" 
                                                     class="badge @renderVar.buttonClass" 
-                                                    value="@renderVar.buttonValue-grant" 
+                                                    value="@renderVar.buttonOperation-@ClientController.GRANT" 
                                                     asp-route-listValue="@elem"
                                             >@renderVar.buttonContent</button>
                                         </li>
@@ -100,7 +101,7 @@
                                             @elem
                                             <button name="button" 
                                                     class="badge @renderVar.buttonClass" 
-                                                    value="@renderVar.buttonValue-grant" 
+                                                    value="@renderVar.buttonOperation-@ClientController.GRANT" 
                                                     asp-route-listValue="@elem"
                                             >@renderVar.buttonContent</button>
                                         </li>
@@ -129,7 +130,7 @@
                                             @elem
                                             <button name="button" 
                                                     class="badge @renderVar.buttonClass" 
-                                                    value="@renderVar.buttonValue-scope" 
+                                                    value="@renderVar.buttonOperation-@ClientController.SCOPE" 
                                                     asp-route-listValue="@elem"
                                             >@renderVar.buttonContent</button>
                                         </li>
@@ -147,7 +148,7 @@
                                             @elem
                                             <button name="button" 
                                                     class="badge @renderVar.buttonClass" 
-                                                    value="@renderVar.buttonValue-scope" 
+                                                    value="@renderVar.buttonOperation-@ClientController.SCOPE" 
                                                     asp-route-listValue="@elem"
                                             >@renderVar.buttonContent</button>
                                         </li>

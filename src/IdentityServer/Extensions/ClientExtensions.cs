@@ -4,7 +4,6 @@ using IdentityServer.Cryptography;
 using IdentityServer.Models.Client;
 using IdentityServer.Repository.Client;
 using IdentityServer4.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IdentityServer.Extensions
 {
@@ -37,9 +36,8 @@ namespace IdentityServer.Extensions
             var model = new ClientModel();
             if (data != null)
             {
-                model = new ClientModel()
+                model = new ClientModel(data.Id, cryptography.Decrypt(data.ClientSecret))
                 {
-                    Id = data.Id,
                     ClientId = data.ClientId,
                     ClientSecrets = { new Secret(cryptography.Decrypt(data.ClientSecret).Sha256()) },
                     AllowedGrantTypes = data.AllowedGrantTypes.ToList(),
@@ -65,10 +63,12 @@ namespace IdentityServer.Extensions
                     Id = model.Id,
                     ClientId = model.ClientId,
                     ClientName = model.ClientName,
-                    ClientSecret = model.ClientSecrets?.SingleOrDefault()?.Value,
+                    ClientSecret = model.DecryptedSecret,
                     Description = model.Description,
                     AllowedGrantTypes = model.AllowedGrantTypes.ToList() ?? new List<string>(),
-                    AllowedScopes = model.AllowedScopes.ToList() ?? new List<string>()
+                    AllowedScopes = model.AllowedScopes.ToList() ?? new List<string>(),
+                    RedirectUrl = model.RedirectUris?.FirstOrDefault(),
+                    PostLogoutRedirectUrl = model.PostLogoutRedirectUris?.FirstOrDefault()
                 };
             }
 

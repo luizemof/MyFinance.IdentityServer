@@ -13,6 +13,11 @@ namespace IdentityServer.Controllers.Client
 {
     public class ClientController : Controller
     {
+        public static string SCOPE = "SCOPE";
+        public static string GRANT = "GRANT";
+        public static string ADD = "ADD";
+        public static string REMOVE = "REMOVE";
+
         private readonly IClientService ClientService;
         private readonly IApiScopeService ApiScopeService;
 
@@ -31,10 +36,14 @@ namespace IdentityServer.Controllers.Client
         [ActionName(ControllerConstants.EDIT)]
         public async Task<IActionResult> Edit(string id)
         {
-            var clientModel = await this.ClientService.GetClientByInternalIdAsync(id);
-            var inputModel = clientModel.ToInputModel();
+            var clientModel = default(ClientModel);
+            
+            if (!string.IsNullOrWhiteSpace(id))
+                clientModel = await this.ClientService.GetClientByInternalIdAsync(id);
+            
+            var inputModel = clientModel?.ToInputModel() ?? new ClientInputModel();
             await SetScopeAndGrantToViewBag(inputModel);
-            return View(inputModel);
+            return View(ControllerConstants.EDIT, inputModel);
         }
 
         [HttpPost]
@@ -51,7 +60,7 @@ namespace IdentityServer.Controllers.Client
             ModelState.Clear();
             await SetScopeAndGrantToViewBag(inputModel);
 
-            return View(inputModel);
+            return View(ControllerConstants.EDIT, inputModel);
         }
 
         private IActionResult HandleWithSave(ClientInputModel inputModel)
@@ -61,9 +70,9 @@ namespace IdentityServer.Controllers.Client
 
         private void HandleWithListChange(ClientInputModel inputModel, string button, string listValue)
         {
-            if (button.Contains("grant"))
+            if (button.Contains(GRANT))
                 HandleWithGrantListChange(inputModel, button, listValue);
-            else if(button.Contains("scope"))
+            else if (button.Contains(SCOPE))
                 HandleWithScopeListChange(inputModel, button, listValue);
         }
 
@@ -72,20 +81,20 @@ namespace IdentityServer.Controllers.Client
             if (inputModel.AllowedGrantTypes == null)
                 inputModel.AllowedGrantTypes = new List<string>();
 
-            if (button.Contains("add"))
+            if (button.Contains(ADD))
                 inputModel.AllowedGrantTypes.Add(listValue);
-            else if(button.Contains("remove"))
+            else if (button.Contains(REMOVE))
                 inputModel.AllowedGrantTypes.Remove(listValue);
         }
 
         private void HandleWithScopeListChange(ClientInputModel inputModel, string button, string listValue)
-        {   
+        {
             if (inputModel.AllowedScopes == null)
                 inputModel.AllowedScopes = new List<string>();
-            
-            if (button.Contains("add"))
+
+            if (button.Contains(ADD))
                 inputModel.AllowedScopes.Add(listValue);
-            else if(button.Contains("remove"))
+            else if (button.Contains(REMOVE))
                 inputModel.AllowedScopes.Remove(listValue);
         }
 
