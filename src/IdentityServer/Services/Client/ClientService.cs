@@ -7,6 +7,7 @@ using IdentityServer.Cryptography;
 using IdentityServer.Extensions;
 using IdentityServer.Models.Client;
 using IdentityServer.Repository.Client;
+using MongoDB.Driver;
 
 namespace IdentityServer.Services.Client
 {
@@ -38,9 +39,18 @@ namespace IdentityServer.Services.Client
             return GetClientByFieldAsync(data => data.Id, id);
         }
 
-        public Task UpsertClientAsync(ClientInputModel inputModel)
+        public async Task UpsertClientAsync(ClientInputModel inputModel)
         {
-            return ClientDataAccess.InsertAsync(inputModel.ToData(Cryptography));
+            try
+            {
+                await ClientDataAccess.InsertAsync(inputModel.ToData(Cryptography));
+            }
+            catch (MongoWriteException ex)
+            {
+                ex.ThrowIfDuplicateKey(nameof(inputModel.ClientId), $"O id do client '{inputModel.ClientId}' já existe");
+                throw ex;
+            }
+            
         }
 
         private async Task<ClientModel> GetClientByFieldAsync<T>(Expression<Func<ClientData, T>> expression, T value)
