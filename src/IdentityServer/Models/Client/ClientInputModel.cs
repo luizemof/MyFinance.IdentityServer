@@ -7,24 +7,23 @@ namespace IdentityServer.Models.Client
     {
         public string Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "O id do client é obrigatório.")]
         public string ClientId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "A chave do cliente é obrigatória.")]
         public string ClientSecret { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "O nome do cliente é obrigatório.")]
         public string ClientName { get; set; }
 
-        [Required]
         public List<string> AllowedGrantTypes { get; set; } = new List<string>();
+        
+        public List<string> AllowedScopes { get; set; } = new List<string>();
 
         public string Description { get; set; }
 
         public string RedirectUrl { get; set; }
 
         public string PostLogoutRedirectUrl { get; set; }
-
-        public List<string> AllowedScopes { get; set; } = new List<string>();
     }
 }

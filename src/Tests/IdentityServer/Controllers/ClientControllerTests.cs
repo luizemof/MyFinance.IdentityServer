@@ -370,6 +370,23 @@ namespace IdentityServer.Tests.Controllers
             Assert.IsNotNull(inputModel);
             Assert.IsTrue(CheckClientInputModel(inputModel));
         }
+        
+        [Test]
+        public void WhenCallEdit_AndTheCommandIsSave_AndModelIsInvalid_ThenShouldReturnViewWithInvalidState()
+        {
+            // Arrange
+            var inputModel = CreateClientModel("id", "secret").ToInputModel();
+
+            // Act
+            ClientController.ModelState.AddModelError("someError", "someMessage");
+            var actionResult = ClientController.Edit(inputModel, ControllerConstants.SAVE, string.Empty).GetAwaiter().GetResult() as ViewResult;
+            var model = actionResult?.Model as ClientInputModel;
+
+            // Assert
+            Assert.IsNotNull(actionResult);
+            Assert.AreEqual(expected: ControllerConstants.EDIT, actionResult.ViewName);
+            Assert.IsNotNull(model);
+        }
 
         private bool CheckClientInputModel(ClientInputModel inputModel)
         {

@@ -37,43 +37,53 @@ namespace IdentityServer.Controllers.Client
         public async Task<IActionResult> Edit(string id)
         {
             var clientModel = default(ClientModel);
-            
+
             if (!string.IsNullOrWhiteSpace(id))
                 clientModel = await this.ClientService.GetClientByInternalIdAsync(id);
-            
+
             var inputModel = clientModel?.ToInputModel() ?? new ClientInputModel();
             await SetScopeAndGrantToViewBag(inputModel);
             return View(ControllerConstants.EDIT, inputModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(ClientInputModel inputModel, string button, string listValue)
+        public Task<IActionResult> Edit(ClientInputModel inputModel, string button, string listValue)
         {
             if (button == ControllerConstants.CANCEL)
-                return RedirectToAction(nameof(Index));
+                return Task.FromResult((IActionResult)RedirectToAction(nameof(Index)));
 
-            if (button == ControllerConstants.SAVE)
-                return HandleWithSave(inputModel);
+            if (button != ControllerConstants.SAVE)
+                return HandleWithListChange(inputModel, button, listValue);
             else
-                HandleWithListChange(inputModel, button, listValue);
+                return HandleWithSave(inputModel);
+        }
 
-            ModelState.Clear();
+        private async Task<IActionResult> HandleWithSave(ClientInputModel inputModel)
+        {
+            if (ModelState.IsValid)
+            {
+                await ClientService.UpsertClientAsync(inputModel);
+                return RedirectToAction(nameof(Index));
+            }
+            
+            return await ReturnEditView(inputModel);
+        }
+
+        private async Task<IActionResult> ReturnEditView(ClientInputModel inputModel)
+        {
             await SetScopeAndGrantToViewBag(inputModel);
-
             return View(ControllerConstants.EDIT, inputModel);
         }
 
-        private IActionResult HandleWithSave(ClientInputModel inputModel)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void HandleWithListChange(ClientInputModel inputModel, string button, string listValue)
+        private Task<IActionResult> HandleWithListChange(ClientInputModel inputModel, string button, string listValue)
         {
             if (button.Contains(GRANT))
                 HandleWithGrantListChange(inputModel, button, listValue);
             else if (button.Contains(SCOPE))
                 HandleWithScopeListChange(inputModel, button, listValue);
+
+            ModelState.Clear();
+            return ReturnEditView(inputModel);
         }
 
         private void HandleWithGrantListChange(ClientInputModel inputModel, string button, string listValue)
