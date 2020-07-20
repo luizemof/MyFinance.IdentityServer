@@ -1,0 +1,38 @@
+@using System.Linq
+@using System.Collections.Generic
+@using IdentityServer.Constants
+@using IdentityServer.Controllers.Client
+
+@model dynamic
+@functions {
+    dynamic RenderListButton(bool isAdd)
+    {
+        var buttonClass = isAdd ? "badge-success" : "badge-danger";
+        var buttonContent = isAdd ? "+" : "x";
+        var buttonOperation = isAdd ? ClientController.ADD : ClientController.REMOVE;
+
+        return new
+        {
+            buttonClass,
+            buttonContent,
+            buttonOperation
+        };
+    }
+}
+@{
+    var collection = Model.Collection as IEnumerable<string>;
+    var operation = Model.Operation as string;
+}
+@for (int i = 0; i < collection.Count(); i++)
+{
+    var elem = collection.ElementAt(i);
+    var renderVar = @RenderListButton(isAdd: true);
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        @elem
+        <button name="button" 
+                class="badge @renderVar.buttonClass" 
+                value="@renderVar.buttonOperation-@operation" 
+                asp-route-listValue="@elem"
+        >@renderVar.buttonContent</button>
+    </li>
+}

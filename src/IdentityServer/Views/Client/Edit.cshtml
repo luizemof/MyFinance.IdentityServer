@@ -71,19 +71,7 @@
                         <div class="row">
                             <div class="from-grup col-md-6">
                                 <ul class="list-group"></ul>
-                                    @for (int i = 0; i < grantTypes.Count(); i++)
-                                    {
-                                        var elem = grantTypes.ElementAt(i);
-                                        var renderVar = @RenderListButton(isAdd: true);
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            @elem
-                                            <button name="button" 
-                                                    class="badge @renderVar.buttonClass" 
-                                                    value="@renderVar.buttonOperation-@ClientController.GRANT" 
-                                                    asp-route-listValue="@elem"
-                                            >@renderVar.buttonContent</button>
-                                        </li>
-                                    }
+                                    <partial name="_EditListLayout" model='new { Collection = @grantTypes, Operation = @ClientController.GRANT }' />
                                 </ul>
                             </div>
                             <div class="from-grup col-md-6">
@@ -118,19 +106,7 @@
                         <div class="row">
                             <div class="from-grup col-md-6">
                                 <ul class="list-group">
-                                    @for (int i = 0; i < scopes.Count(); i++)
-                                    {
-                                        var elem = scopes.ElementAt(i);
-                                        var renderVar = @RenderListButton(isAdd: true);
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            @elem
-                                            <button name="button" 
-                                                    class="badge @renderVar.buttonClass" 
-                                                    value="@renderVar.buttonOperation-@ClientController.SCOPE" 
-                                                    asp-route-listValue="@elem"
-                                            >@renderVar.buttonContent</button>
-                                        </li>
-                                    }
+                                    <partial name="_EditListLayout" model='new { Collection = @scopes, Operation = @ClientController.SCOPE }' />
                                 </ul>
                             </div>
                             <div class="from-grup col-md-6">
