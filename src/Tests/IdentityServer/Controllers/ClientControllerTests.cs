@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using IdentityServer.Constants;
 using IdentityServer.Controllers.Client;
+using IdentityServer.Exceptions;
 using IdentityServer.Extensions;
 using IdentityServer.Models.ApiScope;
 using IdentityServer.Models.Client;
@@ -160,7 +161,7 @@ namespace IdentityServer.Tests.Controllers
             var actionResult = ClientController.Edit(default(ClientInputModel), ControllerConstants.CANCEL, listValue: string.Empty).GetAwaiter().GetResult() as RedirectToActionResult;
 
             // Assert
-            
+
             ClientServiceMock.Verify(service => service.GetClientByInternalIdAsync(It.IsAny<string>()), Times.Never);
             ApiScopeServiceMock.Verify(service => service.GetAllApiScopesAsync(), Times.Never);
             Assert.AreEqual(expected: "Index", actionResult.ActionName);
@@ -370,7 +371,7 @@ namespace IdentityServer.Tests.Controllers
             Assert.IsNotNull(inputModel);
             Assert.IsTrue(CheckClientInputModel(inputModel));
         }
-        
+
         [Test]
         public void WhenCallEdit_AndTheCommandIsSave_AndModelIsInvalid_ThenShouldReturnViewWithInvalidState()
         {
@@ -386,6 +387,43 @@ namespace IdentityServer.Tests.Controllers
             Assert.IsNotNull(actionResult);
             Assert.AreEqual(expected: ControllerConstants.EDIT, actionResult.ViewName);
             Assert.IsNotNull(model);
+        }
+
+        [Test]
+        public void WhenCallEdit_AndTheCommandIsSave_AndThrowAlreadyExistsException_TheShouldReturnEditViewWithModelStateInvalid()
+        {
+            // Arrange
+            var clientInputModel = CreateClientModel("1", "secret").ToInputModel();
+            var alreadyExistsException = new AlreadyExistsException();
+            alreadyExistsException.AddModelError("someKey", "someMessage");
+
+            ClientServiceMock.Setup(service => service.UpsertClientAsync(It.IsAny<ClientInputModel>())).Throws(alreadyExistsException);
+
+            // Act
+            var actionResult = ClientController.Edit(clientInputModel, ControllerConstants.SAVE, string.Empty).GetAwaiter().GetResult() as ViewResult;
+            var actionResultModel = actionResult?.Model as ClientInputModel;
+
+            // Assert
+            Assert.IsFalse(ClientController.ModelState.IsValid);
+            Assert.IsNotNull(actionResult);
+            Assert.AreEqual(clientInputModel, actionResultModel);
+        }
+
+        [Test]
+        public void WhenCallEdit_AndTheCommandIsSave_AndThrowException_TheShouldReturnEditViewWithModelStateInvalid()
+        {
+            // Arrange
+            var clientInputModel = CreateClientModel("1", "secret").ToInputModel();
+            ClientServiceMock.Setup(service => service.UpsertClientAsync(It.IsAny<ClientInputModel>())).Throws(new Exception());
+
+            // Act
+            var actionResult = ClientController.Edit(clientInputModel, ControllerConstants.SAVE, string.Empty).GetAwaiter().GetResult() as ViewResult;
+            var actionResultModel = actionResult?.Model as ClientInputModel;
+
+            // Assert
+            Assert.IsFalse(ClientController.ModelState.IsValid);
+            Assert.IsNotNull(actionResult);
+            Assert.AreEqual(clientInputModel, actionResultModel);
         }
 
         private bool CheckClientInputModel(ClientInputModel inputModel)

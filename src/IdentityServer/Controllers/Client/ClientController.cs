@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Constants;
+using IdentityServer.Exceptions;
 using IdentityServer.Extensions;
 using IdentityServer.Models.Client;
 using IdentityServer.Services;
@@ -60,12 +61,23 @@ namespace IdentityServer.Controllers.Client
 
         private async Task<IActionResult> HandleWithSave(ClientInputModel inputModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                await ClientService.UpsertClientAsync(inputModel);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await ClientService.UpsertClientAsync(inputModel);
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            
+            catch (AlreadyExistsException ex)
+            {
+                ModelState.Merge(ex.ModelStateDictionary);
+            }
+            catch(Exception ex)
+            {
+                ModelState.AddModelError("Error", ex.Message);
+            }
+
             return await ReturnEditView(inputModel);
         }
 

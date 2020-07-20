@@ -12,5 +12,10 @@ namespace IdentityServer.Exceptions
         {
             ModelStateDictionary = new ModelStateDictionary();
         }
+
+        public void AddModelError(string key, string message)
+        {
+            this.ModelStateDictionary.AddModelError(key, message);
+        }
     }
 }

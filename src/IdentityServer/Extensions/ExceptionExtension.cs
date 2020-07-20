@@ -28,7 +28,7 @@ namespace MongoDB.Driver
             if (ex.WriteError != null && ex.WriteError.Category == ServerErrorCategory.DuplicateKey && ex.WriteError.Code == 11000)
             {
                 var alreadyExistsException = new AlreadyExistsException();
-                alreadyExistsException.ModelStateDictionary.AddModelError(fieldKey, errorMessage);
+                alreadyExistsException.AddModelError(fieldKey, errorMessage);
                 throw alreadyExistsException;
             }
         }
