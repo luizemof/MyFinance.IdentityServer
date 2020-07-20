@@ -1,3 +1,15 @@
-<div class="container-fluid">
-    <h1>LOGIN PAGE</h1>
+@using IdentityServer.Models.Account
+
+@model LoginModel
+
+<div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100%;">
+    <form asp-action="Login">
+        <input type="text" class="form-control" placeholder="Email" asp-for="Email">
+        <input type="password" class="form-control" placeholder="Senha" asp-for="Password">
+        <div class="form-check mb-3 mt-3">
+            <input type="checkbox" asp-for="Remember" class="form-check-input">
+            <label asp-for="Remember" class="form-check-label">Remember Me</label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block">Entrar</button>
+    </form>
 </div>

@@ -27,3 +27,7 @@ header.header {
 footer.footer {
   grid-area: footer;
 }
+
+main {
+  height: 100%;
+}
