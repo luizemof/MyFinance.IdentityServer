@@ -43,14 +43,17 @@ namespace IdentityServer.Services.Client
         {
             try
             {
-                await ClientDataAccess.InsertAsync(inputModel.ToData(Cryptography));
+                var clientData = inputModel.ToData(Cryptography);
+                if (string.IsNullOrWhiteSpace(clientData.Id))
+                    await ClientDataAccess.InsertAsync(clientData);
+                else
+                    await ClientDataAccess.ReplaceAsync(clientData, (data) => data.Id == clientData.Id);
             }
             catch (MongoWriteException ex)
             {
                 ex.ThrowIfDuplicateKey(nameof(inputModel.ClientId), $"O id do client '{inputModel.ClientId}' já existe");
                 throw ex;
             }
-            
         }
 
         private async Task<ClientModel> GetClientByFieldAsync<T>(Expression<Func<ClientData, T>> expression, T value)

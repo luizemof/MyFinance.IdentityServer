@@ -1,3 +1,5 @@
+using System;
+using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -50,6 +52,7 @@ namespace IdentityServer.Tests.Services.Client
 
             // Then
             ClientDataAccessMock.Verify(dataAccess => dataAccess.InsertAsync(It.IsAny<ClientData>()), Times.Once);
+            ClientDataAccessMock.Verify(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ClientData>(), It.IsAny<Expression<Func<ClientData, bool>>>()), Times.Never);
         }
 
         [Test]
@@ -60,6 +63,23 @@ namespace IdentityServer.Tests.Services.Client
 
             // When
             Assert.Throws(typeof(AlreadyExistsException), () => ClientService.UpsertClientAsync(new ClientInputModel()).GetAwaiter().GetResult());
+        }
+
+        [Test]
+        public void GivenItHasClient_WhenCallUpsertToUpdateClient_ThenShouldCallReplace()
+        {
+            // Given
+            var input = new ClientInputModel(){ Id = "1˝"};
+            ClientDataAccessMock
+                .Setup(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ClientData>(), It.IsAny<Expression<Func<ClientData, bool>>>()))
+                .ReturnsAsync(true);
+
+            // When
+            ClientService.UpsertClientAsync(input).GetAwaiter().GetResult();
+
+            // Then
+            ClientDataAccessMock.Verify(dataAccess => dataAccess.InsertAsync(It.IsAny<ClientData>()), Times.Never);
+            ClientDataAccessMock.Verify(dataAccess => dataAccess.ReplaceAsync(It.IsAny<ClientData>(), It.IsAny<Expression<Func<ClientData, bool>>>()), Times.Once);
         }
     }
 }
