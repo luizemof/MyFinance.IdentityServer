@@ -9,6 +9,7 @@ namespace IdentityServer.Constants
         public const string IDENTITY_RESOURCE_CONTROLLER = "IdentityResource";
         public const string CLIENT_CONTROLLER = "Client";
 
+        public const string INDEX = "Index";
         public const string SAVE = "Save";
         public const string CANCEL = "Cancel";
         public const string EDIT = "Edit";

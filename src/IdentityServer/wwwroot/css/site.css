@@ -4,30 +4,21 @@
 }
 
 #app {
-  display: grid;
   height: 100%;
-  grid-template-columns: 1fr;
-  grid-template-rows: 60px 1fr 40px;
-  /* background-image: linear-gradient(to right, #E0EAFC, #CFDEF3, #E0EAFC); */
-  grid-template-areas: 
-      "header"
-      "page"
-      "footer";
 }
 
-header.header {
-  grid-area: header;
-  min-height: 60px;
+.content {
+  grid-area: content;
 }
 
-.page {
-  grid-area: page;
-}
-
-footer.footer {
+footer {
   grid-area: footer;
 }
 
 main {
   height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 0.85fr;
+  grid-template-areas: "content" "footer";
 }

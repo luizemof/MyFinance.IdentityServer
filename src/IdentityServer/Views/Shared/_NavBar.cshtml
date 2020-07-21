@@ -1,0 +1,33 @@
+@using IdentityServer.Constants
+
+<nav class="navbar navbar-expand-lg navbar-light bg-primary">
+  <a class="navbar-brand" asp-controller="@ControllerConstants.HOME_CONTROLLER" asp-action="@ControllerConstants.INDEX">MyFinance</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav flex-grow-1 justify-content-center">
+      <li class="nav-item">
+        <a class="nav-link" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="@ControllerConstants.INDEX">Users</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" asp-controller="@ControllerConstants.IDENTITY_RESOURCE_CONTROLLER" asp-action="@ControllerConstants.INDEX" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Resources
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" asp-controller="@ControllerConstants.IDENTITY_RESOURCE_CONTROLLER" asp-action="@ControllerConstants.INDEX">Identity</a>
+          <a class="dropdown-item" asp-controller="@ControllerConstants.API_SCOPE_CONTROLLER" asp-action="@ControllerConstants.INDEX">API Scope</a>
+        </div>
+        <li class="nav-item">
+          <a class="nav-link" asp-controller="@ControllerConstants.CLIENT_CONTROLLER" asp-action="@ControllerConstants.INDEX">Clients</a>
+        </li>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="@ControllerConstants.ACCOUNT_CONTROLLER" asp-action="@ControllerConstants.LOGIN">Entrar</a>
+        </li>
+    </ul>
+  </div>
+</nav>

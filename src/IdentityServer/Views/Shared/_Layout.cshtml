@@ -14,48 +14,15 @@
 </head>
 <body>
     <div id="app">
-        <header class="header bg-primary d-flex align-items-center">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-2">
-                        <a class="navbar-brand text-muted" asp-area="" asp-controller="@ControllerConstants.HOME_CONTROLLER" asp-action="Index">MyFinance Identity</a>
-                    </div>
+        <partial name="_NavBar" />
 
-                    <div class="col-md-8 d-flex justify-content-center">
-                        <ul class="nav">
-                            <li class="nav-item">
-                                <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Index">Usuários</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.API_SCOPE_CONTROLLER" asp-action="Index">Escopos</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.IDENTITY_RESOURCE_CONTROLLER" asp-action="Index">Identidades</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-muted" asp-area="" asp-controller="@ControllerConstants.CLIENT_CONTROLLER" asp-action="Index">Clientes</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="col-md-2 d-flex justify-content-end align-items-center">
-                        <a class="text-muted" asp-area="" asp-controller="@ControllerConstants.ACCOUNT_CONTROLLER" asp-action="Login">Entrar</a>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <div class="page">
-            <main role="main" class="pb-3 mt-3">
+        <main role="main" class="h-100 mt-3">
+            <div class="content">
                 @RenderBody()
-            </main>
-        </div>
-
-        <footer class="footer">
-            <div class="container-fluid">
-                &copy; 2020 - LuizEduardo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
             </div>
-        </footer>
+            <partial name="_Footer" />
+        </main>
+
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
