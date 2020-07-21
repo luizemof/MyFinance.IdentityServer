@@ -1,4 +1,4 @@
-﻿using System;
+﻿using IdentityServer.Controllers;
 using IdentityServer.Cryptography;
 using IdentityServer.Extensions;
 using IdentityServer.Repository;
@@ -39,6 +39,8 @@ namespace IdentityServer
             services.ConfigureDataAccess();
             services.ConfigureServices();
             services.ConfigureIdentityServer();
+
+            services.AddSingleton<IHttpContextWrapper, HttpContextWrapper>();
         }
 
         public void Configure(IApplicationBuilder app)

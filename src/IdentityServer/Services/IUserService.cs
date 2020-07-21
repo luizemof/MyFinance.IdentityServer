@@ -6,7 +6,9 @@ namespace IdentityServer.Services
 {
     public interface IUserService
     {
-         Task<UserModel> GetUserAsync(string id);
+        Task<UserModel> GetUserAsync(string id);
+
+        Task<UserModel> GetUserByEmail(string email);
 
         Task<IEnumerable<UserModel>> GetUsersAsync();
 
@@ -15,7 +17,7 @@ namespace IdentityServer.Services
         Task<IEnumerable<UserModel>> GetInactiveUsersAsync();
 
         Task<UserModel> DeactiveUserAsync(string id);
-        
+
         Task<UserModel> ReactiveUserAsync(string id);
 
         Task<UserModel> UpdateUserAsync(UserInputModel inputUserModel);

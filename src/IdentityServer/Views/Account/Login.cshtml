@@ -4,6 +4,7 @@
 
 <div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100%;">
     <form asp-action="Login">
+        <input type="hidden" asp-for="RedirectURL" value="@Model.RedirectURL"/>
         <input type="text" class="form-control" placeholder="Email" asp-for="Email">
         <input type="password" class="form-control" placeholder="Senha" asp-for="Password">
         <div class="form-check mb-3 mt-3">

@@ -110,5 +110,10 @@ namespace IdentityServer.Services.Users
 
             return updated ? await GetUser(id, isActive) : UserModel.Empty;
         }
+
+        public Task<UserModel> GetUserByEmail(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

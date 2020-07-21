@@ -3,6 +3,7 @@ using IdentityServer.Repository.Client;
 using IdentityServer.Repository.IdentityResource;
 using IdentityServer.Repository.Users;
 using IdentityServer.Services;
+using IdentityServer.Services.Account;
 using IdentityServer.Services.ApiScope;
 using IdentityServer.Services.Client;
 using IdentityServer.Services.IdentityResource;
@@ -40,6 +41,7 @@ namespace IdentityServer.Extensions
             services.AddSingleton<IApiScopeService, ApiScopeService>();
             services.AddSingleton<IIdentityResourceService, IdentityResourceService>();
             services.AddSingleton<IClientService, ClientService>();
+            services.AddSingleton<IAccountService, AccountService>();
         }
 
         public static void ConfigureIdentityServer(this IServiceCollection services)

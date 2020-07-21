@@ -10,6 +10,8 @@ namespace IdentityServer.Models.Account
         [Required]
         public string Password { get; set; }
 
+        public string RedirectURL { get; set; }
+
         public bool Remember { get; set; }
     }
 }
