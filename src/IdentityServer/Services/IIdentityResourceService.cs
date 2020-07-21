@@ -6,7 +6,7 @@ namespace IdentityServer.Services
 {
     public interface IIdentityResourceService
     {
-         Task<IEnumerable<IdentityResourceModel>> GetAllIdentityResources();
+         Task<IEnumerable<IdentityResourceModel>> GetAllIdentityResourcesAsync();
          
          Task<IdentityResourceModel> GetIdentityResourceById(string id);
          

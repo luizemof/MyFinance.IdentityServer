@@ -21,11 +21,13 @@ namespace IdentityServer.Controllers.Client
 
         private readonly IClientService ClientService;
         private readonly IApiScopeService ApiScopeService;
+        private readonly IIdentityResourceService IdentityResourceService;
 
-        public ClientController(IClientService clientService, IApiScopeService apiScopeService)
+        public ClientController(IClientService clientService, IApiScopeService apiScopeService, IIdentityResourceService identityResourceService)
         {
             ClientService = clientService ?? throw new System.ArgumentNullException(nameof(clientService));
             ApiScopeService = apiScopeService ?? throw new System.ArgumentNullException(nameof(apiScopeService));
+            IdentityResourceService = identityResourceService ?? throw new ArgumentNullException(nameof(identityResourceService));
         }
 
         public async Task<IActionResult> Index()
@@ -126,7 +128,9 @@ namespace IdentityServer.Controllers.Client
 
         private async Task SetScopeAndGrantToViewBag(ClientInputModel inputModel)
         {
-            var loadedScopes = await this.ApiScopeService.GetAllApiScopesAsync();
+            var loadedApiScopes = await this.ApiScopeService.GetAllApiScopesAsync();
+            var loadedIdentity = await this.IdentityResourceService.GetAllIdentityResourcesAsync();
+            var scopes = loadedApiScopes.Select(apiScope => apiScope.Name).Concat(loadedIdentity.Select(identity => identity.Name)).Distinct();
             var allGrantTypes = GrantTypes.ClientCredentials
                                             .Concat(GrantTypes.Code)
                                             .Concat(GrantTypes.CodeAndClientCredentials)
@@ -139,7 +143,7 @@ namespace IdentityServer.Controllers.Client
                                             .Concat(GrantTypes.ResourceOwnerPassword)
                                             .Concat(GrantTypes.ResourceOwnerPasswordAndClientCredentials)
                                             .Distinct();
-            ViewBag.Scopes = loadedScopes.Select(scope => scope.Name).Except(inputModel.AllowedScopes ?? Enumerable.Empty<string>());
+            ViewBag.Scopes = scopes.Except(inputModel.AllowedScopes ?? Enumerable.Empty<string>());
             ViewBag.GrantTypes = allGrantTypes.Except(inputModel.AllowedGrantTypes ?? Enumerable.Empty<string>());
         }
     }

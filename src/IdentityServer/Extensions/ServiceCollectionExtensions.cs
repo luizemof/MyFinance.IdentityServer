@@ -53,7 +53,7 @@ namespace IdentityServer.Extensions
                 .AddIdentityApiResources()
                 .AddPersistedGrants();
 
-            
+
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = "Cookies";

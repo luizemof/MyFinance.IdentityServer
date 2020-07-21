@@ -46,7 +46,7 @@ namespace IdentityServer.Store
                 apiScopeTasks.Add(ApiScopeService.GetApiScopeByName(scopeName));
 
             var tasksResult = await Task.WhenAll(apiScopeTasks);
-            return tasksResult;
+            return tasksResult.Where(result => result != null);
         }
 
         public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
@@ -78,7 +78,7 @@ namespace IdentityServer.Store
 
         private Task<IEnumerable<IdentityResourceModel>> GetAllIdentityResources()
         {
-            return this.IdentityResourceService.GetAllIdentityResources();
+            return this.IdentityResourceService.GetAllIdentityResourcesAsync();
         }
 
         private Task<IEnumerable<ApiScopeModel>> GetAllApiScopes()

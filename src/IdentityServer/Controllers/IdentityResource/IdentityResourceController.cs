@@ -19,7 +19,7 @@ namespace IdentityServer.Controllers.IdentityResource
 
         public async Task<IActionResult> Index()
         {
-            var models = await IdentityResourceService.GetAllIdentityResources();
+            var models = await IdentityResourceService.GetAllIdentityResourcesAsync();
             return View(models);
         }
 

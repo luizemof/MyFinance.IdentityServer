@@ -7,6 +7,7 @@ using IdentityServer.Exceptions;
 using IdentityServer.Extensions;
 using IdentityServer.Models.ApiScope;
 using IdentityServer.Models.Client;
+using IdentityServer.Models.IdentityResource;
 using IdentityServer.Services;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +22,16 @@ namespace IdentityServer.Tests.Controllers
         private ClientController ClientController;
         private Mock<IClientService> ClientServiceMock;
         private Mock<IApiScopeService> ApiScopeServiceMock;
+        private Mock<IIdentityResourceService> IdentityServiceMock;
 
         [SetUp]
         public void Setup()
         {
             ClientServiceMock = new Mock<IClientService>();
             ApiScopeServiceMock = new Mock<IApiScopeService>();
-            ClientController = new ClientController(ClientServiceMock.Object, ApiScopeServiceMock.Object);
+            IdentityServiceMock = new Mock<IIdentityResourceService>();
+
+            ClientController = new ClientController(ClientServiceMock.Object, ApiScopeServiceMock.Object, IdentityServiceMock.Object);
         }
 
         [Test]
@@ -59,7 +63,7 @@ namespace IdentityServer.Tests.Controllers
         }
 
         [Test]
-        public void WhenCallEdit_AndItIsANewUser_ThenShouldReturnEditViewWithEmptyModel()
+        public void WhenCallEdit_AndItsANewClient_ThenShouldReturnEditViewWithEmptyModel()
         {
             // Arrange
             var apiName_1 = "Name 1";
@@ -101,7 +105,7 @@ namespace IdentityServer.Tests.Controllers
         }
 
         [Test]
-        public void WhenCallEdit_AndItIsNotANewUser_AndHasScopeAndGrant_ThenShouldReturnEditViewWithClientInputModelAndViewData()
+        public void WhenCallEdit_AndItIsNotANewClient_AndHasScopeAndGrant_ThenShouldReturnEditViewWithClientInputModelAndViewData()
         {
             // Arrange
             var apiName_1 = "Name 1";
@@ -114,15 +118,26 @@ namespace IdentityServer.Tests.Controllers
                 new ApiScopeModel(id: "3", apiName_3, displayName: "name", description: string.Empty, enabled: true)
             };
 
+            var identity_1 = "Identity 1";
+            var identity_2 = "Identity 2";
+            var identity_3 = "Identity 3";
+            var identity = new []
+            {
+                new IdentityResourceModel() { Name =  identity_1},
+                new IdentityResourceModel() { Name =  identity_2},
+                new IdentityResourceModel() { Name =  identity_3}
+            };
+
             var clientId = "1";
             var clientSecret = "secret";
-            var clientAllowedScopes = new List<string>() { apiName_3 };
+            var clientAllowedScopes = new List<string>() { apiName_3, identity_2 };
 
 
             var clientModel = CreateClientModel(clientId, clientSecret, clientAllowedScopes, GrantTypes.Code);
 
-            ApiScopeServiceMock.Setup(service => service.GetAllApiScopesAsync()).ReturnsAsync(scopes.AsEnumerable());
-            ClientServiceMock.Setup(service => service.GetClientByInternalIdAsync(clientId)).ReturnsAsync(clientModel);
+            this.ApiScopeServiceMock.Setup(service => service.GetAllApiScopesAsync()).ReturnsAsync(scopes.AsEnumerable());
+            this.IdentityServiceMock.Setup(service => service.GetAllIdentityResourcesAsync()).ReturnsAsync(identity.AsEnumerable());
+            this.ClientServiceMock.Setup(service => service.GetClientByInternalIdAsync(clientId)).ReturnsAsync(clientModel);
 
             // Act
             var actionResult = ClientController.Edit(clientId).GetAwaiter().GetResult() as ViewResult;
@@ -139,9 +154,14 @@ namespace IdentityServer.Tests.Controllers
             Assert.AreEqual(expected: ControllerConstants.EDIT, actionResult.ViewName);
 
             Assert.IsNotNull(viewDataScopes);
-            Assert.AreEqual(expected: 2, viewDataScopes.Count());
+            Assert.AreEqual(expected: 4, viewDataScopes.Count());
+            
             Assert.IsTrue(viewDataScopes.Contains(apiName_1));
             Assert.IsTrue(viewDataScopes.Contains(apiName_2));
+            Assert.IsTrue(viewDataScopes.Contains(identity_1));
+            Assert.IsTrue(viewDataScopes.Contains(identity_3));
+            
+            Assert.IsFalse(viewDataScopes.Contains(identity_2));
             Assert.IsFalse(viewDataScopes.Contains(apiName_3));
 
             Assert.IsNotNull(viewDataGrantTypes);

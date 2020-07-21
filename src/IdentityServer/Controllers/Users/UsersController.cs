@@ -7,11 +7,10 @@ using IdentityServer.Models.Users;
 using IdentityServer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace IdentityServer.Controllers.Users
 {
-    // [Authorize]
+    //[Authorize]
     public class UsersController : Controller
     {
         private readonly IUserService UserService;

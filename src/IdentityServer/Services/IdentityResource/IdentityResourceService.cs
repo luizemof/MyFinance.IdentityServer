@@ -20,7 +20,7 @@ namespace IdentityServer.Services.IdentityResource
             IdentityResourceDataAccess = identityResourceDataAccess;
         }
 
-        public async Task<IEnumerable<IdentityResourceModel>> GetAllIdentityResources()
+        public async Task<IEnumerable<IdentityResourceModel>> GetAllIdentityResourcesAsync()
         {
             var datas = await IdentityResourceDataAccess.GetAsync();
             return datas.Select(data => data.ToModel()).ToList();

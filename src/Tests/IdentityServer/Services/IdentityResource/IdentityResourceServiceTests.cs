@@ -54,7 +54,7 @@ namespace IdentityServer.Tests.Services.IdentityResource
                 .ReturnsAsync(datas.AsEnumerable());
 
             // When
-            var identities = IdentityResourceService.GetAllIdentityResources().GetAwaiter().GetResult();
+            var identities = IdentityResourceService.GetAllIdentityResourcesAsync().GetAwaiter().GetResult();
 
             // Then
             Assert.IsNotNull(identities);
