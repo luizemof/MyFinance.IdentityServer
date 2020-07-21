@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace IdentityServer.Controllers.Home
 {
-    [AllowAnonymous]
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IIdentityServerInteractionService _interaction;

@@ -1,4 +1,5 @@
-﻿using IdentityServer.Controllers;
+﻿using System.IdentityModel.Tokens.Jwt;
+using IdentityServer.Controllers;
 using IdentityServer.Cryptography;
 using IdentityServer.Extensions;
 using IdentityServer.Repository;
@@ -31,6 +32,7 @@ namespace IdentityServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             services.AddSingleton(new DatabaseSettings() { ConnectionString = "mongodb://localhost:27017", DatabaseName = "IdentityServer" });
             services.AddSingleton(new IdentityServerCryptography(Configuration["EncryptKey"]));
@@ -53,6 +55,7 @@ namespace IdentityServer
             app.UseStaticFiles();
             app.UseRouting();
             app.UseIdentityServer();
+            app.InitializeDatabase().GetAwaiter().GetResult();
 
             ConfigureMongoDriver2IgnoreExtraElements();
 

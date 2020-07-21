@@ -20,7 +20,7 @@ namespace IdentityServer.Repository.IdentityResource
 
         public bool Enabled { get; set; }
 
-        public ICollection<string> UserClaims { get; set; }
+        public ICollection<string> UserClaims { get; set; } = new List<string>();
 
         [BsonConstructor]
         public IdentityResourceData(string id, string name, string displayName, string description, ICollection<string> userClaims, bool enabled)

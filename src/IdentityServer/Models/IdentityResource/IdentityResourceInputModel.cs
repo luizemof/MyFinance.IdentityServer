@@ -8,13 +8,13 @@ namespace IdentityServer.Models.IdentityResource
         public string Id { get; set; }
 
         [Required(ErrorMessage = "O nome é obrigatório.")]
-        public string Name { get; set; }   
+        public string Name { get; set; }
 
         [Required(ErrorMessage = "A exibição do nome é obrigatória.")]
         public string DisplayName { get; set; }
 
         public string Description { get; set; }
 
-        public ICollection<string> UserClaims { get; set; }
+        public ICollection<string> UserClaims { get; set; } = new List<string>();
     }
 }
