@@ -39,14 +39,14 @@ namespace IdentityServer.Controllers.Account
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
-            // check if we are in the context of an authorization request
-            var context = await InteractionService.GetAuthorizationContextAsync(loginModel.RedirectURL);
 
             if (ModelState.IsValid)
             {
                 var validCredentials = await AccountService.ValidateCredentials(loginModel);
                 if (validCredentials)
                 {
+                    // check if we are in the context of an authorization request
+                    var context = await InteractionService.GetAuthorizationContextAsync(loginModel.RedirectURL);
                     var user = await UserService.GetUserByEmail(loginModel.Email);
 
                     // only set explicit expiration here if user chooses "remember me". 
@@ -73,9 +73,9 @@ namespace IdentityServer.Controllers.Account
                     {
                         // if (context.IsNativeClient())
                         // {
-                            // The client is native, so this change in how to
-                            // return the response is for better UX for the end user.
-                            // return this.LoadingPage("Redirect", model.ReturnUrl);
+                        // The client is native, so this change in how to
+                        // return the response is for better UX for the end user.
+                        // return this.LoadingPage("Redirect", model.ReturnUrl);
                         //}
 
                         // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null

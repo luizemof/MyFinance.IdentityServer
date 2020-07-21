@@ -104,6 +104,27 @@ namespace IdentityServer.Tests.Controllers
         }
         
         [Test]
+        public void WhenCallLogin_AndCredentialsIsNotValid_ThenShouldReturnLoginView()
+        {
+            // Arrange
+            var url = "http://localhost:5001/UrlToRedirect";
+            var loginModel = new LoginModel() { RedirectURL = url };
+
+            AccountServiceMock.Setup(service => service.ValidateCredentials(It.IsAny<LoginModel>())).ReturnsAsync(false);
+
+            // Act
+            var viewResult = AccountController.Login(loginModel).GetAwaiter().GetResult() as ViewResult;
+
+            // Assert
+            Assert.IsNotNull(viewResult);
+            Assert.AreEqual(expected: ControllerConstants.LOGIN, viewResult.ViewName);
+            AccountServiceMock.Verify(service => service.ValidateCredentials(It.IsAny<LoginModel>()), Times.Once);
+            UserServiceMock.Verify(service => service.GetUserByEmail(It.IsAny<string>()), Times.Never);
+            UlrHelperMock.Verify(url => url.IsLocalUrl(It.IsAny<string>()), Times.Never);
+            InteractionServiceMock.Verify(interact => interact.GetAuthorizationContextAsync(It.IsAny<string>()), Times.Never);
+        }
+        
+        [Test]
         public void WhenCallLogin_AndModelIsValid_AndRedirectURLISEmpty_ThenShouldReturnLoginView()
         {
             // Arrange
