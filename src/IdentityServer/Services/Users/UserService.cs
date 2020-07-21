@@ -45,7 +45,7 @@ namespace IdentityServer.Services.Users
         public async Task<IEnumerable<UserModel>> GetInactiveUsersAsync()
         {
             var usersData = (await UserDataAccess.GetAsync(isActive: false));
-            return FromUserDataToUser(usersData);
+            return FromUserDataToUserModel(usersData);
         }
 
         public Task<UserModel> GetUserAsync(string id)
@@ -56,7 +56,7 @@ namespace IdentityServer.Services.Users
         public async Task<IEnumerable<UserModel>> GetUsersAsync()
         {
             var users = await UserDataAccess.GetAsync();
-            return FromUserDataToUser(users);
+            return FromUserDataToUserModel(users);
         }
 
         public Task<UserModel> DeactiveUserAsync(string id)
@@ -76,7 +76,7 @@ namespace IdentityServer.Services.Users
                 UserValidation.UpdateValidaton(userInputModel);
                 var userData = new UserData(userInputModel.Id, userInputModel.Name, userInputModel.Email, userInputModel.Password);
                 var updatedUserData = await UserDataAccess.ReplaceAsync(userData);
-                return FromUserDataToUserAPI(updatedUserData);
+                return FromUserDataToUserModel(updatedUserData);
             }
             catch (MongoWriteException ex)
             {
@@ -86,18 +86,25 @@ namespace IdentityServer.Services.Users
             }
         }
 
+        public async Task<UserModel> GetUserByEmail(string email)
+        {
+            var userData = await  this.UserDataAccess.GetByField(userData => userData.Email, email);
+
+            return FromUserDataToUserModel(userData);
+        }
+
         private async Task<UserModel> GetUser(string id, bool? isActive = true)
         {
             var userData = (await UserDataAccess.GetAsync(id, isActive))?.SingleOrDefault();
-            return FromUserDataToUserAPI(userData);
+            return FromUserDataToUserModel(userData);
         }
 
-        private IEnumerable<UserModel> FromUserDataToUser(IEnumerable<UserData> usersData)
+        private IEnumerable<UserModel> FromUserDataToUserModel(IEnumerable<UserData> usersData)
         {
-            return usersData.Select(FromUserDataToUserAPI).Where(user => user != UserModel.Empty).ToList();
+            return usersData.Select(FromUserDataToUserModel).Where(user => user != UserModel.Empty).ToList();
         }
 
-        public static UserModel FromUserDataToUserAPI(UserData userData)
+        private  UserModel FromUserDataToUserModel(UserData userData)
         {
             return userData != null ? new UserModel(userData.Id, userData.Name, userData.Email, userData.IsActive) : UserModel.Empty;
         }
@@ -109,11 +116,6 @@ namespace IdentityServer.Services.Users
             var updated = await UserDataAccess.UpdateAsync(id, updateOption);
 
             return updated ? await GetUser(id, isActive) : UserModel.Empty;
-        }
-
-        public Task<UserModel> GetUserByEmail(string email)
-        {
-            throw new NotImplementedException();
         }
     }
 }

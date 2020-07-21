@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -285,6 +286,22 @@ namespace IdentityServer.Tests.Services.Users
 
             // When
             Assert.Throws(typeof(AlreadyExistsException), () => UserService.UpdateUserAsync(updateUserRequest).GetAwaiter().GetResult());
+        }
+
+        [TestCase]
+        public void GivenItHasAnUser_WhenICallGetUserByEmail_ThenShouldReturnUser()
+        {
+            // Given
+            this.UserDataAccessMock
+                .Setup(dataAccess => dataAccess.GetByField(It.IsAny<Expression<Func<UserData, string>>>(), It.IsAny<string>()))
+                .ReturnsAsync(new UserData(name: "name", email: "email"));
+
+            // When
+            var userModel = this.UserService.GetUserByEmail(email: "email").GetAwaiter().GetResult();
+
+            // Then
+            Assert.IsNotNull(userModel);
+            this.UserDataAccessMock.Verify(dataAccess => dataAccess.GetByField(It.IsAny<Expression<Func<UserData, string>>>(), It.IsAny<string>()), Times.Once);
         }
     }
 }
