@@ -4,10 +4,12 @@ using IdentityServer.Constants;
 using IdentityServer.Exceptions;
 using IdentityServer.Models.ApiScope;
 using IdentityServer.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers.Scopes
 {
+    [Authorize]
     public class ApiScopeController : Controller
     {
         private readonly IApiScopeService ApiScopeService;

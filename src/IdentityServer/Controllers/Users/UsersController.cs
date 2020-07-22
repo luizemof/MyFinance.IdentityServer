@@ -5,10 +5,12 @@ using IdentityServer.Constants;
 using IdentityServer.Exceptions;
 using IdentityServer.Models.Users;
 using IdentityServer.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers.Users
 {
+    [Authorize]
     public class UsersController : Controller
     {
         private readonly IUserService UserService;

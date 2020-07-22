@@ -8,8 +8,10 @@ using IdentityServer.Services.ApiScope;
 using IdentityServer.Services.Client;
 using IdentityServer.Services.IdentityResource;
 using IdentityServer.Services.Users;
+using IdentityServer4;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 
 namespace IdentityServer.Extensions
@@ -60,14 +62,24 @@ namespace IdentityServer.Extensions
                 options.DefaultChallengeScheme = "oidc";
             })
             .AddCookie("Cookies")
-            .AddOpenIdConnect("oidc", options =>
+            .AddOpenIdConnect("oidc", "MyFinance Open Id Connect", options =>
             {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+                options.SaveTokens = true;
+                
                 options.Authority = "https://localhost:5001";
                 options.ClientId = "IdentityServer";
                 options.ClientSecret = "secret";
                 options.ResponseType = "code";
-                options.SaveTokens = true;
+
                 options.Scope.Add("IdentityServerAdmin");
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                };
             });
 
 

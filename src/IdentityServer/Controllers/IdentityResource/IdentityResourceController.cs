@@ -5,10 +5,12 @@ using IdentityServer.Exceptions;
 using IdentityServer.Extensions;
 using IdentityServer.Models.IdentityResource;
 using IdentityServer.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers.IdentityResource
 {
+    [Authorize]
     public class IdentityResourceController : Controller
     {
         private readonly IIdentityResourceService IdentityResourceService;

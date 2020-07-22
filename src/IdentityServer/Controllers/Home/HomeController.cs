@@ -1,15 +1,11 @@
-using System.Threading.Tasks;
-using IdentityServer.Constants;
-using IdentityServer.Models.Home;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 
 namespace IdentityServer.Controllers.Home
 {
-    [Authorize]
+    [Authorize()]
     public class HomeController : Controller
     {
         private readonly IIdentityServerInteractionService _interaction;
@@ -25,14 +21,14 @@ namespace IdentityServer.Controllers.Home
         // Get: Home/
         public IActionResult Index()
         {
+            ViewBag.Message = "Home Page";
             return View();
         }
         
+        [Authorize(Roles="Welcome")]
         public IActionResult Welcome(string name, int numTimes = 1)
         {
-            ViewData["Message"] = "Hello " + name;
-            ViewData["NumTimes"] = numTimes;
-
+            ViewBag.Message = $"Welcome {name}";
             return View("Index");
         }
 
