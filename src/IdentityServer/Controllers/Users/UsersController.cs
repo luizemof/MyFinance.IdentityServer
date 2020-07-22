@@ -36,9 +36,7 @@ namespace IdentityServer.Controllers.Users
             if (!string.IsNullOrWhiteSpace(id))
             {
                 var user = await UserService.GetUserAsync(id);
-                userInputModel.Id = user.Id;
-                userInputModel.Email = user.Email;
-                userInputModel.Name = user.Name;
+                userInputModel = user.ToInputModel();
             }
 
             return View(userInputModel);
@@ -54,7 +52,6 @@ namespace IdentityServer.Controllers.Users
             {
                 try
                 {
-
                     if (button == ControllerConstants.SAVE)
                     {
                         if (string.IsNullOrWhiteSpace(userInputModel.Id))

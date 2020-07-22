@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using IdentityServer4.Models;
 using IdentityServerClient = IdentityServer4.Models.Client;
 namespace IdentityServer.Models.Client
@@ -34,6 +35,31 @@ namespace IdentityServer.Models.Client
                     this.RequireClientSecret = false;
                 }
             }
+        }
+    }
+
+    public static class ClientExtensions
+    {
+        public static ClientInputModel ToInputModel(this ClientModel model)
+        {
+            var inputModel = new ClientInputModel();
+            if (model != null)
+            {
+                inputModel = new ClientInputModel()
+                {
+                    Id = model.Id,
+                    ClientId = model.ClientId,
+                    ClientName = model.ClientName,
+                    ClientSecret = model.DecryptedSecret,
+                    Description = model.Description,
+                    AllowedGrantTypes = model.AllowedGrantTypes.ToList() ?? new List<string>(),
+                    AllowedScopes = model.AllowedScopes.ToList() ?? new List<string>(),
+                    RedirectUrl = model.RedirectUris?.FirstOrDefault(),
+                    PostLogoutRedirectUrl = model.PostLogoutRedirectUris?.FirstOrDefault()
+                };
+            }
+
+            return inputModel;
         }
     }
 }

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers.IdentityResource
 {
-    [Authorize]
+    [Authorize(Roles = Roles.ADMIN)]
     public class IdentityResourceController : Controller
     {
         private readonly IIdentityResourceService IdentityResourceService;

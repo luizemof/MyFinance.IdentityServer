@@ -12,7 +12,7 @@ namespace IdentityServer.Services
 
         Task<IEnumerable<UserModel>> GetUsersAsync();
 
-        Task<UserModel> CreateUserAsync(UserInputModel inputUserModel);
+        Task CreateUserAsync(UserInputModel inputUserModel);
 
         Task<IEnumerable<UserModel>> GetInactiveUsersAsync();
 

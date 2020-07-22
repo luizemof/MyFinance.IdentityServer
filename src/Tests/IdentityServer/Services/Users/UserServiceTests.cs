@@ -47,17 +47,11 @@ namespace IdentityServer.Tests.Services.Users
             Func<string, bool> checkGetAsyncInputMock = id => !string.IsNullOrEmpty(id);
             IEnumerable<UserData> users = new[] { new UserData(string.Empty, string.Empty, string.Empty, string.Empty) };
 
-            UserDataAccessMock
-                .Setup(userDataAccess => userDataAccess.GetAsync(It.Is<string>(id => checkGetAsyncInputMock(id)), It.IsAny<bool>()))
-                .Returns(Task.FromResult(users));
-
             // When
-            var userData = UserService.CreateUserAsync(new UserInputModel() { Password = string.Empty, PasswordConfirmation = string.Empty }).GetAwaiter().GetResult();
+            UserService.CreateUserAsync(new UserInputModel() { Password = string.Empty, PasswordConfirmation = string.Empty }).GetAwaiter().GetResult();
 
             // Then
-            Assert.IsFalse(userData == UserModel.Empty);
             UserDataAccessMock.Verify(userDataAccess => userDataAccess.InsertAsync(It.IsAny<UserData>()), Times.Once);
-            UserDataAccessMock.Verify(userDataAccess => userDataAccess.GetAsync(It.Is<string>(id => checkGetAsyncInputMock(id)), It.IsAny<bool>()), Times.Once);
         }
 
         [TestCase]
@@ -85,9 +79,10 @@ namespace IdentityServer.Tests.Services.Users
             var userId = "1";
             var name = "name";
             var email = "email";
+            var password = "c49nHayoXPOsZRI1NPkAIA==";
             
             Func<string, bool> checkId = (id) => id == userId;
-            IEnumerable<UserData> users = new[] { new UserData(userId, name, email, null) };
+            IEnumerable<UserData> users = new[] { new UserData(userId, name, email, password) };
 
             UserDataAccessMock
                 .Setup(dataAccess => dataAccess.GetAsync(It.Is<string>(id => checkId(id)), It.Is<bool>(isActive => isActive)))
@@ -111,8 +106,9 @@ namespace IdentityServer.Tests.Services.Users
             string userId = "1";
             string name = "name";
             string email = "email";
+            string password = "c49nHayoXPOsZRI1NPkAIA==";
 
-            IEnumerable<UserData> users = new[] { new UserData(userId, name, email, null) };
+            IEnumerable<UserData> users = new[] { new UserData(userId, name, email, password) };
             Func<string, bool> checkId = (id) => id != userId;
             var getAsyncMockInput = It.Is<string>(id => checkId(id));
 
@@ -255,11 +251,13 @@ namespace IdentityServer.Tests.Services.Users
                                                                     &&
                                                                     userData.Name == updatedUserRequest.Name
                                                                     &&
-                                                                    userData.Password == updatedUserRequest.Password;
+                                                                    userData.Password == IdentityServerCryptographyTests.TestIdentityServerCryptography.Encrypt(updatedUserRequest.Password)
+                                                                    &&
+                                                                    userData.Email == updatedUserRequest.Email;
 
             UserDataAccessMock
                 .Setup(userDataAccess => userDataAccess.ReplaceAsync(It.Is<UserData>(userData => checkUpdateUserInput(userData))))
-                .Returns(Task.FromResult(new UserData(id, name, email, password)));
+                .Returns(Task.FromResult(new UserData(id, name, email, IdentityServerCryptographyTests.TestIdentityServerCryptography.Encrypt(password))));
 
             // When
             var updatedUser = UserService.UpdateUserAsync(updatedUserRequest).GetAwaiter().GetResult();

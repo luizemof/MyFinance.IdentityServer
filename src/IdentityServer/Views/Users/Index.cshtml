@@ -1,13 +1,14 @@
 @using IdentityServer.Models.Users
 @using System.Collections.Generic
 @using IdentityServer.Constants
+@using System.Linq
 
 @model IEnumerable<UserModel>
 
 <div class="container-fluid">
     <div class="row">
         <div class="col d-flex justify-content-end">
-            <a class="btn btn-primary mb-2" asp-asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="">Novo Usuário</a>
+            <a class="btn btn-primary mb-2" asp-asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="">New User</a>
         </div>
     </div>
     
@@ -19,44 +20,42 @@
                         <th scope="col">Nome</th>
                         <th scope="col">Email</th>
                         <th scope="col">Ativo</th>
+                        <th scope="col">Admin</th>
                         <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (UserModel user in Model)
                     {
+                        string active;
+                        string activeButtonDescription;
+                        
+                        string disabled = string.Empty;
+                        string activeButtonClass = string.Empty;
+                        string admin = user.Roles != null && user.Roles.Contains(Roles.ADMIN) ? "Yes": "No";
+
+                        if(user.IsActive)
+                        {
+                            active = "Yes";
+                            activeButtonDescription = "Deactivate";
+                            activeButtonClass = "btn btn-danger";
+                        }
+                        else
+                        {
+                            active = "No";
+                            activeButtonDescription = "Activate";
+                            disabled = "disabled";
+                            activeButtonClass = "btn btn-success";
+                        }
+
                         <tr>
                             <td>@user.Name</td>
                             <td>@user.Email</td>
-                            
-                            @if(@user.IsActive) { <td>Sim</td> }
-                            else { <td>Não</td> }
-
+                            <td>@active</td>
+                            <td>@admin</td>
                             <td class="d-flex justify-content-end">
-                                @if(user.IsActive)
-                                {
-                                    <a class="btn btn-secondary" 
-                                        asp-controller="@ControllerConstants.USERS_CONTROLLER" 
-                                        asp-action="Edit" 
-                                        asp-route-id="@user.Id"
-                                    >Editar</a>
-                                    <a class="btn btn-danger ml-2" 
-                                        style="min-width: 100px" 
-                                        asp-action="Deactivate" 
-                                        asp-route-id="@user.Id"
-                                        asp-route-isActive="true"
-                                    >Desativar</a>
-                                }
-                                else
-                                {
-                                    <button type="button" class="btn btn-secondary" disabled>Editar</button>
-                                    <a class="btn btn-danger ml-2" 
-                                        style="min-width: 100px" 
-                                        asp-action="Deactivate" 
-                                        asp-route-id="@user.Id" 
-                                        asp-route-isActive="false"
-                                    >Reativar</a>
-                                }
+                                <a class="btn btn-secondary @disabled" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                                <a class="@activeButtonClass ml-2" style="min-width: 100px" asp-action="Deactivate" asp-route-id="@user.Id" asp-route-isActive="@user.IsActive">@activeButtonDescription</a>
                             </td>
                         </tr>
                     }

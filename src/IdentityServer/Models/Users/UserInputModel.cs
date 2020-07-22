@@ -1,4 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using IdentityServer.Constants;
+using IdentityServer.Cryptography;
+using IdentityServer.Repository.Users;
 
 namespace IdentityServer.Models.Users
 {
@@ -18,5 +21,17 @@ namespace IdentityServer.Models.Users
         [Required(ErrorMessage = "A Confirmação da Senha é obrigatória.")]
         [Compare(nameof(Password), ErrorMessage = "As Senhas não conferem.")]
         public string PasswordConfirmation { get; set; }
+
+        public bool IsAdmin { get; set; }
+    }
+
+    public static class UserExtension
+    {
+        public static UserData ToData(this UserInputModel userInputModel, IdentityServerCryptography cryptography)
+        {
+            var password = cryptography.Encrypt(userInputModel.Password);
+            var roles = userInputModel.IsAdmin ? new[] { Roles.ADMIN } : null;
+            return new UserData(userInputModel.Id, userInputModel.Name, userInputModel.Email, password, roles);
+        }
     }
 }

@@ -8,10 +8,12 @@ using IdentityServer.Extensions;
 using IdentityServer.Models.Client;
 using IdentityServer.Services;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers.Client
 {
+    [Authorize(Roles = Roles.ADMIN)]
     public class ClientController : Controller
     {
         public static string SCOPE = "SCOPE";

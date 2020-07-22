@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IdentityServer4.Services;
+using System.Linq;
+using IdentityModel;
+using System.Security.Claims;
 
 namespace IdentityServer.Controllers.Account
 {
@@ -65,7 +68,8 @@ namespace IdentityServer.Controllers.Account
                     // issue authentication cookie with subject ID and username
                     var isuser = new IdentityServerUser(user.Id)
                     {
-                        DisplayName = user.Name
+                        DisplayName = user.Name,
+                        AdditionalClaims = user.Roles?.Select(role => new Claim(JwtClaimTypes.Role, role))?.ToList() ?? new System.Collections.Generic.List<Claim>()
                     };
 
                     await HttpContextWrapper.SignInAsync(HttpContext, isuser, props);

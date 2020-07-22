@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers.Scopes
 {
-    [Authorize]
+    [Authorize(Roles = Roles.ADMIN)]
     public class ApiScopeController : Controller
     {
         private readonly IApiScopeService ApiScopeService;

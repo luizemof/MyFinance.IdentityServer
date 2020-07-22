@@ -11,8 +11,9 @@
         {
             var message = "Ocorreu um erro na operação. Tente novamente mais tarde ou entre em contato com o administrador do sistema.";
             @if(ViewContext.ModelState.TryGetValue(AccountController.INVALID_CREDENTIALS, out ModelStateEntry entry))
+            {
                 message = "Invalid Credentials";
-
+            }
             <div class="alert alert-danger" role="alert">
                 @message
             </div>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Cryptography;
-using IdentityServer.Exceptions;
 using IdentityServer.Models.Users;
 using IdentityServer.Repository.Users;
 using MongoDB.Bson;
@@ -22,18 +21,13 @@ namespace IdentityServer.Services.Users
             IdentityServerCryptography = identityServerCryptography ?? throw new ArgumentNullException(nameof(identityServerCryptography));
         }
 
-        public async Task<UserModel> CreateUserAsync(UserInputModel user)
+        public async Task CreateUserAsync(UserInputModel user)
         {
             try
             {
                 UserValidation.InsertValidation(user);
-                var id = ObjectId.GenerateNewId().ToString();
-                var password = IdentityServerCryptography.Encrypt(user.Password);
-                var userData = new UserData(id, user.Name, user.Email, password);
+                var userData = user.ToData(IdentityServerCryptography);
                 await UserDataAccess.InsertAsync(userData);
-
-                var createdUserData = (await UserDataAccess.GetAsync(id)).Single();
-                return new UserModel(createdUserData.Id, createdUserData.Name, createdUserData.Email, createdUserData.IsActive);
             }
             catch (MongoWriteException ex)
             {
@@ -74,9 +68,9 @@ namespace IdentityServer.Services.Users
             try
             {
                 UserValidation.UpdateValidaton(userInputModel);
-                var userData = new UserData(userInputModel.Id, userInputModel.Name, userInputModel.Email, userInputModel.Password);
-                var updatedUserData = await UserDataAccess.ReplaceAsync(userData);
-                return FromUserDataToUserModel(updatedUserData);
+                var userData = userInputModel.ToData(this.IdentityServerCryptography);
+                var updatedUserData = await this.UserDataAccess.ReplaceAsync(userData);
+                return updatedUserData.ToModel(this.IdentityServerCryptography);
             }
             catch (MongoWriteException ex)
             {
@@ -90,23 +84,18 @@ namespace IdentityServer.Services.Users
         {
             var userData = await  this.UserDataAccess.GetByField(userData => userData.Email, email);
 
-            return FromUserDataToUserModel(userData);
+            return userData.ToModel(this.IdentityServerCryptography);
         }
 
         private async Task<UserModel> GetUser(string id, bool? isActive = true)
         {
             var userData = (await UserDataAccess.GetAsync(id, isActive))?.SingleOrDefault();
-            return FromUserDataToUserModel(userData);
+            return userData.ToModel(this.IdentityServerCryptography);
         }
 
         private IEnumerable<UserModel> FromUserDataToUserModel(IEnumerable<UserData> usersData)
         {
-            return usersData.Select(FromUserDataToUserModel).Where(user => user != UserModel.Empty).ToList();
-        }
-
-        private  UserModel FromUserDataToUserModel(UserData userData)
-        {
-            return userData != null ? new UserModel(userData.Id, userData.Name, userData.Email, userData.IsActive) : UserModel.Empty;
+            return usersData.Select(data => data.ToModel(this.IdentityServerCryptography)).Where(user => user != UserModel.Empty).ToList();
         }
 
         private async Task<UserModel> UserActivate(string id, bool isActive)

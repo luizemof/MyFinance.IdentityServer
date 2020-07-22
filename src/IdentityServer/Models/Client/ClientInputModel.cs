@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using IdentityServer.Cryptography;
+using IdentityServer.Repository.Client;
 using IdentityServer.Services.Client;
 
 namespace IdentityServer.Models.Client
@@ -26,5 +28,30 @@ namespace IdentityServer.Models.Client
         public string RedirectUrl { get; set; }
 
         public string PostLogoutRedirectUrl { get; set; }
+    }
+
+    public static class ClientInputModelExtension
+    {
+        public static ClientData ToData(this ClientInputModel inputModel, IdentityServerCryptography cryptography)
+        {
+            var data = new ClientData();
+            if (inputModel != null)
+            {
+                data = new ClientData()
+                {
+                    Id = inputModel.Id,
+                    ClientId = inputModel.ClientId,
+                    ClientSecret = cryptography.Encrypt(inputModel.ClientSecret),
+                    AllowedGrantTypes = inputModel.AllowedGrantTypes,
+                    AllowedScopes = inputModel.AllowedScopes,
+                    RedirectUrl = inputModel.RedirectUrl,
+                    PostLogoutRedirectUrl = inputModel.PostLogoutRedirectUrl,
+                    ClientName = inputModel.ClientName,
+                    Description = inputModel.Description
+                };
+            }
+
+            return data;
+        }
     }
 }

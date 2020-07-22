@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using IdentityServer.Constants;
 using IdentityServer.Controllers;
 using IdentityServer.Controllers.Account;
 using IdentityServer.Models.Account;
+using IdentityServer.Models.Users;
 using IdentityServer.Services;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -67,7 +69,7 @@ namespace IdentityServer.Tests.Controllers
             var url = "http://localhost:5001/UrlToRedirect";
             var loginModel = new LoginModel() { RedirectURL = url };
 
-            UserServiceMock.Setup(service => service.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(new Models.Users.UserModel("1", "Name", "email", true));
+            UserServiceMock.Setup(service => service.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(new UserModel("1", "Name", "email", "password", true, Enumerable.Empty<string>()));
             AccountServiceMock.Setup(service => service.ValidateCredentials(It.IsAny<LoginModel>())).ReturnsAsync(true);
             UlrHelperMock.Setup(url => url.IsLocalUrl(It.IsAny<string>())).Returns(true);
 
@@ -89,7 +91,7 @@ namespace IdentityServer.Tests.Controllers
             var url = "http://localhost:5001/UrlToRedirect";
             var loginModel = new LoginModel() { RedirectURL = url };
 
-            UserServiceMock.Setup(service => service.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(new Models.Users.UserModel("1", "Name", "email", true));
+            UserServiceMock.Setup(service => service.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(new UserModel("1", "Name", "email", "password", true, Enumerable.Empty<string>()));
             AccountServiceMock.Setup(service => service.ValidateCredentials(It.IsAny<LoginModel>())).ReturnsAsync(true);
             InteractionServiceMock.Setup(interact => interact.GetAuthorizationContextAsync(It.IsAny<string>())).ReturnsAsync(new AuthorizationRequest());
 
@@ -134,7 +136,7 @@ namespace IdentityServer.Tests.Controllers
             // Arrange
             var loginModel = new LoginModel();
 
-            UserServiceMock.Setup(service => service.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(new Models.Users.UserModel("1", "Name", "email", true));
+            UserServiceMock.Setup(service => service.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(new UserModel("1", "Name", "email", "password", true, Enumerable.Empty<string>()));
             AccountServiceMock.Setup(service => service.ValidateCredentials(It.IsAny<LoginModel>())).ReturnsAsync(true);
             UlrHelperMock.Setup(url => url.IsLocalUrl(It.IsAny<string>())).Returns(false);
 
@@ -156,7 +158,7 @@ namespace IdentityServer.Tests.Controllers
             var url = "http://localhost:5001/UrlToRedirect";
             var loginModel = new LoginModel() { RedirectURL = url };
 
-            UserServiceMock.Setup(service => service.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(new Models.Users.UserModel("1", "Name", "email", true));
+            UserServiceMock.Setup(service => service.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(new UserModel("1", "Name", "email", "password", true, Enumerable.Empty<string>()));
             AccountServiceMock.Setup(service => service.ValidateCredentials(It.IsAny<LoginModel>())).ReturnsAsync(true);
             UlrHelperMock.Setup(url => url.IsLocalUrl(It.IsAny<string>())).Returns(false);
 
