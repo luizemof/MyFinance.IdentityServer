@@ -1,4 +1,6 @@
 using System;
+using System.Security.Claims;
+using System.Security.Principal;
 using IdentityServer.Constants;
 using IdentityServer.Controllers;
 using IdentityServer.Controllers.Account;
@@ -118,6 +120,8 @@ namespace IdentityServer.Tests.Controllers
             // Assert
             Assert.IsNotNull(viewResult);
             Assert.AreEqual(expected: ControllerConstants.LOGIN, viewResult.ViewName);
+            Assert.False(this.AccountController.ModelState.IsValid);
+            Assert.True(this.AccountController.ModelState.ContainsKey(AccountController.INVALID_CREDENTIALS));
             AccountServiceMock.Verify(service => service.ValidateCredentials(It.IsAny<LoginModel>()), Times.Once);
             UserServiceMock.Verify(service => service.GetUserByEmail(It.IsAny<string>()), Times.Never);
             UlrHelperMock.Verify(url => url.IsLocalUrl(It.IsAny<string>()), Times.Never);
@@ -175,6 +179,42 @@ namespace IdentityServer.Tests.Controllers
             Assert.AreEqual(expected: ControllerConstants.LOGIN, viewResult.ViewName);
 
             Assert.IsNotNull(model);
+        }
+
+        [Test]
+        public void WhenCallLogout_AndUserIsAuthenticated_ThenShouldCallSignOutAndRedirectToHome()
+        {
+            // Arrange
+            HttpContextMock.Setup(httpContext => httpContext.UserIsAuthenticated(It.IsAny<HttpContext>())).Returns(true);
+
+            // Act
+            var redirectResult = AccountController.Logout().GetAwaiter().GetResult() as RedirectToActionResult;
+
+            // Assert
+            HttpContextMock.Verify(httpContext => httpContext.UserIsAuthenticated(It.IsAny<HttpContext>()), Times.Once);
+            HttpContextMock.Verify(httpContext => httpContext.SignOutAsync(It.IsAny<HttpContext>()), Times.Once);
+
+            Assert.IsNotNull(redirectResult);
+            Assert.AreEqual(expected: ControllerConstants.HOME_CONTROLLER, redirectResult.ControllerName);
+            Assert.AreEqual(expected: ControllerConstants.INDEX, redirectResult.ActionName);
+        }
+        
+        [Test]
+        public void WhenCallLogout_AndUserIsNotAuthenticated_ThenShouldNotCallSignOutAndShouldRedirectToHome()
+        {
+            // Arrange
+            HttpContextMock.Setup(httpContext => httpContext.UserIsAuthenticated(It.IsAny<HttpContext>())).Returns(false);
+
+            // Act
+            var redirectResult = AccountController.Logout().GetAwaiter().GetResult() as RedirectToActionResult;
+
+            // Assert
+            HttpContextMock.Verify(httpContext => httpContext.UserIsAuthenticated(It.IsAny<HttpContext>()), Times.Once);
+            HttpContextMock.Verify(httpContext => httpContext.SignOutAsync(It.IsAny<HttpContext>()), Times.Never);
+
+            Assert.IsNotNull(redirectResult);
+            Assert.AreEqual(expected: ControllerConstants.HOME_CONTROLLER, redirectResult.ControllerName);
+            Assert.AreEqual(expected: ControllerConstants.INDEX, redirectResult.ActionName);
         }
     }
 }

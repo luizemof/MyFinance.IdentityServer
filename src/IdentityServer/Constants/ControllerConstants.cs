@@ -14,6 +14,7 @@ namespace IdentityServer.Constants
         public const string CANCEL = "Cancel";
         public const string EDIT = "Edit";
         public const string LOGIN = "Login";
+        public const string LOGOUT = "Logout";
 
         public const string ERROR = "Error";
     }

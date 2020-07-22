@@ -1,9 +1,22 @@
 @using IdentityServer.Models.Account
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+@using IdentityServer.Controllers.Account
 
 @model LoginModel
 
 <div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100%;">
+
     <form asp-action="Login">
+        @if(!ViewContext.ModelState.IsValid)
+        {
+            var message = "Ocorreu um erro na operação. Tente novamente mais tarde ou entre em contato com o administrador do sistema.";
+            @if(ViewContext.ModelState.TryGetValue(AccountController.INVALID_CREDENTIALS, out ModelStateEntry entry))
+                message = "Invalid Credentials";
+
+            <div class="alert alert-danger" role="alert">
+                @message
+            </div>
+        }
         <input type="hidden" asp-for="RedirectURL" value="@Model.RedirectURL"/>
         <input type="text" class="form-control" placeholder="Email" asp-for="Email">
         <input type="password" class="form-control" placeholder="Senha" asp-for="Password">
@@ -11,6 +24,6 @@
             <input type="checkbox" asp-for="Remember" class="form-check-input">
             <label asp-for="Remember" class="form-check-label">Remember Me</label>
         </div>
-        <button class="btn btn-lg btn-primary btn-block">Entrar</button>
+        <button class="btn btn-lg btn-primary btn-block">Enter</button>
     </form>
 </div>

@@ -14,6 +14,7 @@ namespace IdentityServer.Controllers.Account
     [AllowAnonymous]
     public class AccountController : Controller
     {
+        public const string INVALID_CREDENTIALS = "InvalidCredentials";
         private readonly IAccountService AccountService;
         private readonly IUserService UserService;
         private readonly IIdentityServerInteractionService InteractionService;
@@ -99,7 +100,18 @@ namespace IdentityServer.Controllers.Account
                 }
             }
 
+            this.ModelState.AddModelError(INVALID_CREDENTIALS, "Invalid Credentials");
+
             return View(ControllerConstants.LOGIN, loginModel);
+        }
+
+        [ActionName(ControllerConstants.LOGOUT)]
+        public async Task<IActionResult> Logout()
+        {
+            if (this.HttpContextWrapper.UserIsAuthenticated(this.HttpContext))
+                await this.HttpContextWrapper.SignOutAsync(this.HttpContext);
+                
+            return RedirectToAction(ControllerConstants.INDEX, ControllerConstants.HOME_CONTROLLER);
         }
     }
 }
