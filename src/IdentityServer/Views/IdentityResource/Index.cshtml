@@ -7,7 +7,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col d-flex justify-content-end">
-            <a class="btn btn-primary mb-2" asp-action="Edit">Nova Identidade</a>
+            <a class="btn btn-primary mb-2" asp-action="Edit">New Identity</a>
         </div>
     </div>
 
@@ -17,10 +17,10 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th scope="col">Nome</th>
-                            <th scope="col">Nome de exibição</th>
-                            <th scope="col">Descrição</th>
-                            <th scope="col">Ativo</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Display Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Enabled</th>
                             <th scope="col">Claims</th>
                             <th scope="col"></th>
                         </tr>
@@ -36,14 +36,14 @@
                                 string claimsToolTip = identity.UserClaims?.Count > 0 ? string.Join(" <br> ", identity.UserClaims) : string.Empty;
                                 if(identity.Enabled) 
                                 {
-                                    active = "Sim";
-                                    activeButtonDescription = "Desativar";
+                                    active = "Yes";
+                                    activeButtonDescription = "Disable";
                                     activeButtonClass = "btn btn-danger";
                                 }
                                 else
                                 {
-                                    active = "Não";
-                                    activeButtonDescription = "Ativar";
+                                    active = "No";
+                                    activeButtonDescription = "Enable";
                                     disabled = "disabled";
                                     activeButtonClass = "btn btn-success";
                                 }
@@ -57,7 +57,7 @@
                                         <span style="display: block;max-width: 300px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">@claims</span>
                                     </td>
                                     <td class="d-flex justify-content-end">
-                                        <a class="btn btn-secondary @disabled" asp-action="@ControllerConstants.EDIT" asp-route-id="@identity.Id">Editar</a>
+                                        <a class="btn btn-secondary @disabled" asp-action="@ControllerConstants.EDIT" asp-route-id="@identity.Id">Edit</a>
                                         <a class="@activeButtonClass ml-2" style="min-width: 100px" 
                                             asp-action="Enabled" 
                                             asp-route-id="@identity.Id" 

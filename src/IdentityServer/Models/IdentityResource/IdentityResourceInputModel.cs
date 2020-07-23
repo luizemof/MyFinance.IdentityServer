@@ -7,10 +7,10 @@ namespace IdentityServer.Models.IdentityResource
     {
         public string Id { get; set; }
 
-        [Required(ErrorMessage = "O nome é obrigatório.")]
+        [Required(ErrorMessage = "The Name is required")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "A exibição do nome é obrigatória.")]
+        [Required(ErrorMessage = "The Display Name is required")]
         public string DisplayName { get; set; }
 
         public string Description { get; set; }

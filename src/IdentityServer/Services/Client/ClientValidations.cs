@@ -6,11 +6,11 @@ namespace IdentityServer.Services.Client
 {
     public static class ClientValidations
     {
-        public const string ALLOWED_GRANT_TYPES_VALIDATION_MESSAGE = "É necessário informar ao menos um tipo de concessão.";
+        public const string ALLOWED_GRANT_TYPES_VALIDATION_MESSAGE = "It is required at least one Grant Type";
 
-        public const string CLIENT_NAME_VALIDATION_MESSAGE = "O nome do cliente é obrigatório.";
+        public const string CLIENT_NAME_VALIDATION_MESSAGE = "The Client Name is required.";
 
-        public const string CLIENT_ID_VALIDATION_MESSAGE = "O id do client é obrigatório.";
+        public const string CLIENT_ID_VALIDATION_MESSAGE = "The Client Id is required.";
 
         public static void Validate(this ClientInputModel inputModel)
         {

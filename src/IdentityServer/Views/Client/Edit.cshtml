@@ -33,29 +33,29 @@
 
         <div class="form-row">
             <div class="form-group col-md-4">
-                <label asp-for="ClientId">Id do Client</label>
+                <label asp-for="ClientId">Client Id</label>
                 <input asp-for="ClientId" type="text" class="form-control"  value="@Model.ClientId"/>
                 <span asp-validation-for="ClientId" class="text-danger"></span>
             </div>
             <div class="form-group col-md-4">
-                <label asp-for="ClientName">Nome do Cliente</label>
+                <label asp-for="ClientName">Client Name</label>
                 <input asp-for="ClientName" type="text" class="form-control" value="@Model.ClientName" />
                 <span asp-validation-for="ClientName" class="text-danger"></span>
             </div>
             <div class="form-group col-md-4">
-                <label asp-for="ClientSecret">Senha do Cliente</label>
+                <label asp-for="ClientSecret">Secret</label>
                 <input asp-for="ClientSecret" type="text" class="form-control" value="@Model.ClientSecret" />
                 <span asp-validation-for="ClientSecret" class="text-danger"></span>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">
-                <label asp-for="RedirectUrl">URL de Redirecionamento</label>
+                <label asp-for="RedirectUrl">Redirect URL</label>
                 <input asp-for="RedirectUrl" type="text" class="form-control"  value="@Model.RedirectUrl"/>
                 <span asp-validation-for="RedirectUrl" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6">
-                <label asp-for="PostLogoutRedirectUrl">URL de logout</label>
+                <label asp-for="PostLogoutRedirectUrl">Post Logout URL</label>
                 <input asp-for="PostLogoutRedirectUrl" type="text" class="form-control" value="@Model.PostLogoutRedirectUrl" />
                 <span asp-validation-for="PostLogoutRedirectUrl" class="text-danger"></span>
             </div>
@@ -64,7 +64,7 @@
             <div class="col-md-6 d-flex">
                 <div class="card flex-fill">
                     <div class="card-header">
-                        Tipos de Concessão Permitidos
+                        Allowed Grant Types
                         <span asp-validation-for="AllowedGrantTypes" class="text-danger"></span>
                     </div>
                     <div class="card-body">
@@ -100,7 +100,7 @@
             <div class="col-md-6 d-flex">
                 <div class="card flex-fill">
                     <div class="card-header">
-                        Escopos Permitidos
+                        Allowed Scopes
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -134,14 +134,14 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md">
-                <label asp-for="Description">Descrição</label>
+                <label asp-for="Description">Description</label>
                 <textarea asp-for="Description" type="text" class="form-control" value="@Model.Description" rows="10"></textarea>
             </div>
         </div>
 
         <div class="mt-3">
-            <button class="btn btn-primary" name="button" value="@ControllerConstants.SAVE">Salvar</button>
-            <button class="btn btn-secondary" name="button" value="@ControllerConstants.CANCEL">Cancelar</button>
+            <button class="btn btn-primary" name="button" value="@ControllerConstants.SAVE">Save</button>
+            <button class="btn btn-secondary" name="button" value="@ControllerConstants.CANCEL">Cancel</button>
         </div>
     </form>
 </div>

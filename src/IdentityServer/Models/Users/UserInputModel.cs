@@ -9,17 +9,17 @@ namespace IdentityServer.Models.Users
     {
         public string Id { get; set; }
 
-        [Required(ErrorMessage = "O Nome é obrigatório.")]
+        [Required(ErrorMessage = "The Name is required")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "O Email é obrigatório.")]
+        [Required(ErrorMessage = "The Email is required")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "A Senha é obrigatória.")]
+        [Required(ErrorMessage = "The Password is required")]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "A Confirmação da Senha é obrigatória.")]
-        [Compare(nameof(Password), ErrorMessage = "As Senhas não conferem.")]
+        [Required(ErrorMessage = "The Password Confirmation is required")]
+        [Compare(nameof(Password), ErrorMessage = "Passwords don't match.")]
         public string PasswordConfirmation { get; set; }
 
         public bool IsAdmin { get; set; }
