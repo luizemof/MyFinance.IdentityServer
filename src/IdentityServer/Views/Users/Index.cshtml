@@ -14,53 +14,55 @@
     
     <div class="row">
         <div class="col">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Active</th>
-                        <th scope="col">Admin</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (UserModel user in Model)
-                    {
-                        string active;
-                        string activeButtonDescription;
-                        
-                        string disabled = string.Empty;
-                        string activeButtonClass = string.Empty;
-                        string admin = user.Roles != null && user.Roles.Contains(Roles.ADMIN) ? "Yes": "No";
-
-                        if(user.IsActive)
-                        {
-                            active = "Yes";
-                            activeButtonDescription = "Deactivate";
-                            activeButtonClass = "btn btn-danger";
-                        }
-                        else
-                        {
-                            active = "No";
-                            activeButtonDescription = "Activate";
-                            disabled = "disabled";
-                            activeButtonClass = "btn btn-success";
-                        }
-
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td>@user.Name</td>
-                            <td>@user.Email</td>
-                            <td>@active</td>
-                            <td>@admin</td>
-                            <td class="d-flex justify-content-end">
-                                <a class="btn btn-secondary @disabled" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
-                                <a class="@activeButtonClass ml-2" style="min-width: 100px" asp-action="Deactivate" asp-route-id="@user.Id" asp-route-isActive="@user.IsActive">@activeButtonDescription</a>
-                            </td>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Active</th>
+                            <th scope="col">Admin</th>
+                            <th scope="col"></th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (UserModel user in Model)
+                        {
+                            string active;
+                            string activeButtonDescription;
+                            
+                            string disabled = string.Empty;
+                            string activeButtonClass = string.Empty;
+                            string admin = user.Roles != null && user.Roles.Contains(Roles.ADMIN) ? "Yes": "No";
+
+                            if(user.IsActive)
+                            {
+                                active = "Yes";
+                                activeButtonDescription = "Deactivate";
+                                activeButtonClass = "btn btn-danger";
+                            }
+                            else
+                            {
+                                active = "No";
+                                activeButtonDescription = "Activate";
+                                disabled = "disabled";
+                                activeButtonClass = "btn btn-success";
+                            }
+
+                            <tr>
+                                <td>@user.Name</td>
+                                <td>@user.Email</td>
+                                <td>@active</td>
+                                <td>@admin</td>
+                                <td class="d-flex justify-content-end">
+                                    <a class="btn btn-secondary @disabled" asp-controller="@ControllerConstants.USERS_CONTROLLER" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                                    <a class="@activeButtonClass ml-2" style="min-width: 100px" asp-action="Deactivate" asp-route-id="@user.Id" asp-route-isActive="@user.IsActive">@activeButtonDescription</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
