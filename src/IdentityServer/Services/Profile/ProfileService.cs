@@ -40,9 +40,9 @@ namespace IdentityServer.Services.Profile
                 foreach (var property in profileProperties)
                 {
                     var value = property.GetValue(userModel);
-                    if (value is IEnumerable<object> enumerable)
+                    if (value is IEnumerable<object> enumerable && enumerable != null)
                         claims.AddRange(enumerable.Select(e => new Claim(property.Name, e.ToString())));
-                    else if (!string.IsNullOrWhiteSpace(value.ToString()))
+                    else if (!string.IsNullOrWhiteSpace(value?.ToString()))
                         claims.Add(new Claim(property.Name, value.ToString()));
                 }
             }
