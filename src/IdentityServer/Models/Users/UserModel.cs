@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using IdentityServer.Attributes;
 using IdentityServer.Constants;
 
 namespace IdentityServer.Models.Users
@@ -15,11 +16,22 @@ namespace IdentityServer.Models.Users
             }
         }
 
+
+        [ProfileAttribute]
         public string Id { get; }
+        
+        [ProfileAttribute]
         public string Name { get; }
+        
+        [ProfileAttribute]
         public string Email { get; }
+        
         public string Password { get; }
+        
+        [ProfileAttribute]
         public bool IsActive { get; }
+        
+        [ProfileAttribute]
         public IEnumerable<string> Roles { get; }
 
         public UserModel(string id, string name, string email, string password, bool isActive, IEnumerable<string> roles)

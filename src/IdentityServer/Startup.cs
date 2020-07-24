@@ -51,7 +51,7 @@ namespace IdentityServer
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors(opt => opt.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseStaticFiles();
             app.UseRouting();
             app.UseIdentityServer();

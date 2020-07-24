@@ -7,6 +7,7 @@ using IdentityServer.Services.Account;
 using IdentityServer.Services.ApiScope;
 using IdentityServer.Services.Client;
 using IdentityServer.Services.IdentityResource;
+using IdentityServer.Services.Profile;
 using IdentityServer.Services.Users;
 using IdentityServer4;
 using Microsoft.Extensions.Configuration;
@@ -53,7 +54,8 @@ namespace IdentityServer.Extensions
                 .AddMongoRepository()
                 .AddClients()
                 .AddIdentityApiResources()
-                .AddPersistedGrants();
+                .AddPersistedGrants()
+                .AddProfileService<ProfileService>();
 
 
             services.AddAuthentication(options =>
