@@ -39,11 +39,14 @@ namespace IdentityServer.Services.Profile
             {
                 foreach (var property in profileProperties)
                 {
+                    var profileAttribute = property.GetCustomAttributes(typeof(ProfileAttribute), true).FirstOrDefault() as ProfileAttribute;
+                    var claimTypeName = profileAttribute.Name;
                     var value = property.GetValue(userModel);
+                    
                     if (value is IEnumerable<object> enumerable && enumerable != null)
-                        claims.AddRange(enumerable.Select(e => new Claim(property.Name, e.ToString())));
+                        claims.AddRange(enumerable.Select(e => new Claim(claimTypeName, e.ToString())));
                     else if (!string.IsNullOrWhiteSpace(value?.ToString()))
-                        claims.Add(new Claim(property.Name, value.ToString()));
+                        claims.Add(new Claim(claimTypeName, value.ToString()));
                 }
             }
 

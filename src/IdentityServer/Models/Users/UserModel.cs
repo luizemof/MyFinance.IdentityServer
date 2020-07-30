@@ -17,21 +17,21 @@ namespace IdentityServer.Models.Users
         }
 
 
-        [ProfileAttribute]
+        [ProfileAttribute("id")]
         public string Id { get; }
         
-        [ProfileAttribute]
+        [ProfileAttribute("name")]
         public string Name { get; }
         
-        [ProfileAttribute]
+        [ProfileAttribute("email")]
         public string Email { get; }
         
         public string Password { get; }
         
-        [ProfileAttribute]
+        [ProfileAttribute("isActive")]
         public bool IsActive { get; }
         
-        [ProfileAttribute]
+        [ProfileAttribute("roles")]
         public IEnumerable<string> Roles { get; }
 
         public UserModel(string id, string name, string email, string password, bool isActive, IEnumerable<string> roles)
