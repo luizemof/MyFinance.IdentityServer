@@ -85,7 +85,7 @@ namespace IdentityServer.Models.Users
                 Email = userModel.Email,
                 Password = userModel.Password,
                 PasswordConfirmation = userModel.Password,
-                IsAdmin = userModel.Roles != null && userModel.Roles.Contains(Roles.ADMIN)
+                Roles = userModel.Roles?.ToList() ?? new List<string>()
             };
         }
     }

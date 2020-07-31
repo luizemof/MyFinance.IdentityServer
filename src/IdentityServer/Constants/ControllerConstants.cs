@@ -19,5 +19,10 @@ namespace IdentityServer.Constants
         public const string LOGOUT = "Logout";
 
         public const string ERROR = "Error";
+
+        public const string BUTTON = "BUTTON";
+
+        public const string ADD_TO_LIST = "ADD";
+        public const string REMOVE_FROM_LIST = "REMOVE";
     }
 }

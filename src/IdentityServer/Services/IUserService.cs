@@ -21,5 +21,7 @@ namespace IdentityServer.Services
         Task<UserModel> ReactiveUserAsync(string id);
 
         Task<UserModel> UpdateUserAsync(UserInputModel inputUserModel);
+        
+        Task<IEnumerable<string>> GetRolesAsync();
     }
 }

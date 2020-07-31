@@ -1,16 +1,26 @@
 @using IdentityServer.Constants
 @using IdentityServer.Models.Users
+@using IdentityServer.Controllers.Users
 
 @model UserInputModel
 
-@functions{
-    object GetCheckboxProperties()
+@functions {
+    dynamic RenderListButton(bool isAdd)
     {
-        if(Model.IsAdmin)
-            return new { @@class = "form-check-input", @checked = "" };
+        var buttonClass = isAdd ? "badge-success" : "badge-danger";
+        var buttonContent = isAdd ? "+" : "x";
+        var buttonOperation = isAdd ? ControllerConstants.ADD_TO_LIST : ControllerConstants.REMOVE_FROM_LIST;
 
-        return new { @@class = "form-check-input" };
+        return new
+        {
+            buttonClass,
+            buttonContent,
+            buttonOperation
+        };
     }
+}
+@{
+    var roles = ViewBag.Roles as IEnumerable<string>;
 }
 <div class="container-fluid">
     <form asp-action="Edit">
@@ -46,10 +56,49 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="col">
-                <div class="form-check mb-3 mt-3">
-                    @Html.CheckBox(nameof(Model.IsAdmin), GetCheckboxProperties())
-                    <label asp-for="IsAdmin" class="form-check-label">Administrator</label>
+            <div class="col-md-6">
+                <div class="card flex-fill">
+                    <div class="card-header">
+                        Roles
+                    </div>
+                     <div class="card-body">
+                         <div class="row mb-3">
+                             <div class="col-md-6">
+                                <label for="addNewRole">Role Name</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="newRole">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary form-control" name="@ControllerConstants.BUTTON" value="@ControllerConstants.ADD_TO_LIST-@UsersController.ROLES">New Role</button>
+                                    </div>
+                                </div>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="from-grup col-md-6">
+                                <ul class="list-group"></ul>
+                                    <partial name="_EditListLayout" model='new { Collection = @roles, Operation = @UsersController.ROLES }' />
+                                </ul>
+                            </div>
+                            <div class="from-grup col-md-6">
+                                <ul class="list-group">
+                                    @for (int i = 0; i < Model.Roles.Count(); i++)
+                                    {
+                                        @Html.HiddenFor(m => m.Roles[i]);
+                                        var elem = Model.Roles.ElementAt(i);
+                                        var renderVar = @RenderListButton(isAdd: false);
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            @elem
+                                            <button name="@ControllerConstants.BUTTON" 
+                                                    class="badge @renderVar.buttonClass" 
+                                                    value="@renderVar.buttonOperation-@UsersController.ROLES" 
+                                                    asp-route-listValue="@elem"
+                                            >@renderVar.buttonContent</button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                         </div>
+                     </div>
                 </div>
             </div>
         </div>

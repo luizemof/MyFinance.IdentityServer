@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using IdentityServer.Constants;
 using IdentityServer.Cryptography;
 using IdentityServer.Repository.Users;
@@ -22,7 +24,7 @@ namespace IdentityServer.Models.Users
         [Compare(nameof(Password), ErrorMessage = "Passwords don't match.")]
         public string PasswordConfirmation { get; set; }
 
-        public bool IsAdmin { get; set; }
+        public List<string> Roles { get; set; } = new List<string>();
     }
 
     public static class UserExtension
@@ -30,8 +32,7 @@ namespace IdentityServer.Models.Users
         public static UserData ToData(this UserInputModel userInputModel, IdentityServerCryptography cryptography)
         {
             var password = cryptography.Encrypt(userInputModel.Password);
-            var roles = userInputModel.IsAdmin ? new[] { Roles.ADMIN } : null;
-            return new UserData(userInputModel.Id, userInputModel.Name, userInputModel.Email, password, roles);
+            return new UserData(userInputModel.Id, userInputModel.Name, userInputModel.Email, password, userInputModel.Roles);
         }
     }
 }

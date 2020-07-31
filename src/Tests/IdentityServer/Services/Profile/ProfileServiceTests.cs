@@ -62,7 +62,8 @@ namespace IdentityServer.Tests.Services.Profile
             {
                 foreach (var property in profileProperties)
                 {
-                    Assert.IsTrue(claims.Any(c => c.Type == property.Name), $"{property.Name} not found in Claims");
+                    var attribute = property.GetCustomAttributes(typeof(ProfileAttribute), true).FirstOrDefault() as ProfileAttribute;
+                    Assert.IsTrue(claims.Any(c => c.Type == attribute.Name), $"{attribute.Name} not found in Claims");
                 }
             }
         }

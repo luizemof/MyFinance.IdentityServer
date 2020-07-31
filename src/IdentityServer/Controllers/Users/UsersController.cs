@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Constants;
@@ -10,9 +11,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers.Users
 {
-    [Authorize]
+    [Authorize(Roles = Roles.ADMIN)]
     public class UsersController : Controller
     {
+        public class RolesOperations
+        {
+            [BindProperty(Name=ControllerConstants.BUTTON)]
+            public string Button { get; set; }
+
+            [BindProperty(Name="listValue")]
+            public string ListValue { get; set; }
+            
+            [BindProperty(Name="newRole")]
+            public string NewRole { get; set; }
+
+            public string RoleValue
+            {
+                get
+                {
+                    return string.IsNullOrWhiteSpace(ListValue) ? NewRole : ListValue;
+                }
+            }
+        }
+
+        public const string ROLES = "Roles";
+
         private readonly IUserService UserService;
 
         public UsersController(IUserService userService)
@@ -39,26 +62,35 @@ namespace IdentityServer.Controllers.Users
                 userInputModel = user.ToInputModel();
             }
 
-            return View(userInputModel);
+            return await ReturnEditView(userInputModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(UserInputModel userInputModel, string button)
+        public Task<IActionResult> Edit(UserInputModel userInputModel, RolesOperations rolesOperations)
         {
+            var button = rolesOperations.Button;
             if (button == ControllerConstants.CANCEL)
-                return RedirectToAction(nameof(Index));
+            {
+                return Task.FromResult((IActionResult)RedirectToAction(nameof(Index)));
+            }
+            else if (button == ControllerConstants.SAVE)
+            {
+                return HandleWithSave(userInputModel);
+            }
+            else
+                return HandleWithRoles(userInputModel, rolesOperations);
+        }
 
+        private async Task<IActionResult> HandleWithSave(UserInputModel userInputModel)
+        {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (button == ControllerConstants.SAVE)
-                    {
-                        if (string.IsNullOrWhiteSpace(userInputModel.Id))
-                            await UserService.CreateUserAsync(userInputModel);
-                        else
-                            await UserService.UpdateUserAsync(userInputModel);
-                    }
+                    if (string.IsNullOrWhiteSpace(userInputModel.Id))
+                        await UserService.CreateUserAsync(userInputModel);
+                    else
+                        await UserService.UpdateUserAsync(userInputModel);
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -72,7 +104,37 @@ namespace IdentityServer.Controllers.Users
                 }
             }
 
-            return View(userInputModel);
+            return await ReturnEditView(userInputModel);
+        }
+
+        private Task<IActionResult> HandleWithRoles(UserInputModel userInputModel, RolesOperations rolesOperations)
+        {
+            var button = rolesOperations.Button;
+            var roleValue = rolesOperations.RoleValue;
+
+            if (userInputModel.Roles == null)
+                userInputModel.Roles = new List<string>();
+
+            if (button.Contains(ControllerConstants.ADD_TO_LIST))
+                userInputModel.Roles.Add(roleValue);
+            else if (button.Contains(ControllerConstants.REMOVE_FROM_LIST))
+                userInputModel.Roles.Remove(roleValue);
+
+
+            ModelState.Clear();
+            return ReturnEditView(userInputModel);
+        }
+
+        private async Task<IActionResult> ReturnEditView(UserInputModel userInputModel)
+        {
+            await SetRolesToViewBag(userInputModel);
+            return View(ControllerConstants.EDIT, userInputModel);
+        }
+
+        private async Task SetRolesToViewBag(UserInputModel userInputModel)
+        {
+            var loadedRoles = await this.UserService.GetRolesAsync();
+            ViewBag.Roles = loadedRoles.Except(userInputModel.Roles ?? Enumerable.Empty<string>());
         }
 
         [ActionName("Deactivate")]

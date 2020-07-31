@@ -13,7 +13,7 @@ namespace IdentityServer.Services.Users
     public class UserService : IUserService
     {
         private readonly IUserDataAccess UserDataAccess;
-        private readonly IdentityServerCryptography IdentityServerCryptography; 
+        private readonly IdentityServerCryptography IdentityServerCryptography;
 
         public UserService(IUserDataAccess userDataAccess, IdentityServerCryptography identityServerCryptography)
         {
@@ -31,7 +31,7 @@ namespace IdentityServer.Services.Users
             }
             catch (MongoWriteException ex)
             {
-                ex.ThrowIfDuplicateKey(nameof(user.Email), $"O email '{user.Email}' já existe.");;
+                ex.ThrowIfDuplicateKey(nameof(user.Email), $"O email '{user.Email}' já existe."); ;
                 throw new Exception("An error occours when create a user.");
             }
         }
@@ -82,7 +82,7 @@ namespace IdentityServer.Services.Users
 
         public async Task<UserModel> GetUserByEmail(string email)
         {
-            var userData = await  this.UserDataAccess.GetByField(userData => userData.Email, email);
+            var userData = await this.UserDataAccess.GetByField(userData => userData.Email, email);
 
             return userData.ToModel(this.IdentityServerCryptography);
         }
@@ -105,6 +105,17 @@ namespace IdentityServer.Services.Users
             var updated = await UserDataAccess.UpdateAsync(id, updateOption);
 
             return updated ? await GetUser(id, isActive) : UserModel.Empty;
+        }
+
+        public async Task<IEnumerable<string>> GetRolesAsync()
+        {
+            var filter = Builders<UserData>.Filter.Where(data => data.Roles != null && data.Roles.Count() > 0);
+            var roles = new List<string>();
+            var users = await this.UserDataAccess.GetAsync(filter);
+            foreach (var user in users)
+                roles.AddRange(user.Roles);
+
+            return roles.ToHashSet();
         }
     }
 }
