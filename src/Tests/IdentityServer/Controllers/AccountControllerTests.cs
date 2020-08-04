@@ -106,7 +106,7 @@ namespace IdentityServer.Tests.Controllers
             UlrHelperMock.Verify(url => url.IsLocalUrl(It.IsAny<string>()), Times.Never);
             InteractionServiceMock.Verify(interact => interact.GetAuthorizationContextAsync(It.IsAny<string>()), Times.Once);
         }
-        
+
         [Test]
         public void WhenCallLogin_AndCredentialsIsNotValid_ThenShouldReturnLoginView()
         {
@@ -129,7 +129,7 @@ namespace IdentityServer.Tests.Controllers
             UlrHelperMock.Verify(url => url.IsLocalUrl(It.IsAny<string>()), Times.Never);
             InteractionServiceMock.Verify(interact => interact.GetAuthorizationContextAsync(It.IsAny<string>()), Times.Never);
         }
-        
+
         [Test]
         public void WhenCallLogin_AndModelIsValid_AndRedirectURLISEmpty_ThenShouldReturnLoginView()
         {
@@ -190,7 +190,7 @@ namespace IdentityServer.Tests.Controllers
             HttpContextMock.Setup(httpContext => httpContext.UserIsAuthenticated(It.IsAny<HttpContext>())).Returns(true);
 
             // Act
-            var redirectResult = AccountController.Logout().GetAwaiter().GetResult() as RedirectToActionResult;
+            var redirectResult = AccountController.Logout("123").GetAwaiter().GetResult() as RedirectToActionResult;
 
             // Assert
             HttpContextMock.Verify(httpContext => httpContext.UserIsAuthenticated(It.IsAny<HttpContext>()), Times.Once);
@@ -200,7 +200,7 @@ namespace IdentityServer.Tests.Controllers
             Assert.AreEqual(expected: ControllerConstants.HOME_CONTROLLER, redirectResult.ControllerName);
             Assert.AreEqual(expected: ControllerConstants.INDEX, redirectResult.ActionName);
         }
-        
+
         [Test]
         public void WhenCallLogout_AndUserIsNotAuthenticated_ThenShouldNotCallSignOutAndShouldRedirectToHome()
         {
@@ -208,7 +208,7 @@ namespace IdentityServer.Tests.Controllers
             HttpContextMock.Setup(httpContext => httpContext.UserIsAuthenticated(It.IsAny<HttpContext>())).Returns(false);
 
             // Act
-            var redirectResult = AccountController.Logout().GetAwaiter().GetResult() as RedirectToActionResult;
+            var redirectResult = AccountController.Logout("123").GetAwaiter().GetResult() as RedirectToActionResult;
 
             // Assert
             HttpContextMock.Verify(httpContext => httpContext.UserIsAuthenticated(It.IsAny<HttpContext>()), Times.Once);
@@ -217,6 +217,28 @@ namespace IdentityServer.Tests.Controllers
             Assert.IsNotNull(redirectResult);
             Assert.AreEqual(expected: ControllerConstants.HOME_CONTROLLER, redirectResult.ControllerName);
             Assert.AreEqual(expected: ControllerConstants.INDEX, redirectResult.ActionName);
+        }
+
+        [Test]
+        public void WhenCallLogout_AsPostLogoutURI_ThenShouldCallSignOutAndRedirectToPostLogoutURL()
+        {
+            // Arrange
+            var url = "http://abc.com/";
+            var logoutId = "123";
+            
+            this.InteractionServiceMock.Setup(mock => mock.GetLogoutContextAsync(logoutId)).ReturnsAsync(new LogoutRequest(null, null) { PostLogoutRedirectUri = url });
+            this.HttpContextMock.Setup(httpContext => httpContext.UserIsAuthenticated(It.IsAny<HttpContext>())).Returns(true);
+
+            // Act
+            var redirectResult = AccountController.Logout(logoutId).GetAwaiter().GetResult() as RedirectResult;
+
+            // Assert
+            this.InteractionServiceMock.Verify(mock => mock.GetLogoutContextAsync(logoutId), Times.Once);
+            this.HttpContextMock.Verify(httpContext => httpContext.UserIsAuthenticated(It.IsAny<HttpContext>()), Times.Once);
+            this.HttpContextMock.Verify(httpContext => httpContext.SignOutAsync(It.IsAny<HttpContext>()), Times.Once);
+
+            Assert.IsNotNull(redirectResult);
+            Assert.AreEqual(expected: url, redirectResult.Url);
         }
     }
 }

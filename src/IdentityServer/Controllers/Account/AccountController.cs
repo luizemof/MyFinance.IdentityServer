@@ -110,12 +110,13 @@ namespace IdentityServer.Controllers.Account
         }
 
         [ActionName(ControllerConstants.LOGOUT)]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Logout(string logoutId)
         {
+            var logout = await InteractionService.GetLogoutContextAsync(logoutId);
             if (this.HttpContextWrapper.UserIsAuthenticated(this.HttpContext))
                 await this.HttpContextWrapper.SignOutAsync(this.HttpContext);
-                
-            return RedirectToAction(ControllerConstants.INDEX, ControllerConstants.HOME_CONTROLLER);
+
+            return string.IsNullOrWhiteSpace(logout?.PostLogoutRedirectUri) ? (IActionResult)RedirectToAction(ControllerConstants.INDEX, ControllerConstants.HOME_CONTROLLER) : (IActionResult)Redirect(logout.PostLogoutRedirectUri);
         }
     }
 }
